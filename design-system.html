@@ -1,0 +1,981 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>kyn — Design System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="tokens.css" />
+
+<style>
+/* page chrome */
+body { padding-bottom: 120px; }
+
+.kyn-topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in oklch, var(--surface-0) 85%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--surface-line);
+}
+.kyn-topbar-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 14px var(--s-10);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.kyn-mark { display: inline-flex; align-items: center; gap: 10px; }
+.kyn-mark .glyph {
+  width: 26px; height: 26px;
+  background: var(--orange-500);
+  border-radius: 7px;
+  position: relative;
+  box-shadow: var(--bevel), 0 1px 0 rgba(0,0,0,0.4);
+}
+.kyn-mark .glyph::after {
+  content: ""; position: absolute; inset: 6px;
+  border: 2px solid #fff; border-radius: 3px;
+  border-right-color: transparent; border-bottom-color: transparent;
+  transform: rotate(45deg);
+}
+.kyn-mark .word {
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 600; letter-spacing: -0.02em;
+}
+.kyn-mark .reg {
+  font-family: var(--font-mono); font-size: 9px; color: var(--ink-3);
+  margin-left: 2px; letter-spacing: 0.1em; text-transform: uppercase;
+  vertical-align: super;
+}
+
+/* ambient hero */
+.kyn-hero {
+  position: relative;
+  background: var(--surface-0);
+  padding: var(--s-24) var(--s-10) var(--s-12);
+  overflow: hidden;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.kyn-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 100%, rgba(255,77,23,0.08), transparent 70%),
+    radial-gradient(ellipse 80% 60% at 0% 0%, rgba(255,255,255,0.025), transparent 60%);
+  pointer-events: none;
+}
+.kyn-hero-eyebrows {
+  display: flex; gap: var(--s-3); align-items: center;
+  margin-bottom: var(--s-6);
+}
+.kyn-hero h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(72px, 11vw, 168px);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+  color: var(--ink-1);
+}
+.kyn-hero h1 .accent { color: var(--orange-500); }
+.kyn-hero .lede {
+  margin-top: var(--s-8);
+  max-width: 620px;
+  font-size: 17px;
+  color: var(--ink-2);
+  line-height: 1.55;
+}
+.kyn-hero .meta-row {
+  margin-top: var(--s-10);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-6);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--surface-line);
+}
+.kyn-hero .meta-row .cell { display: flex; flex-direction: column; gap: 6px; }
+.kyn-hero .meta-row .v { color: var(--ink-1); font-size: 15px; font-weight: 500; }
+.kyn-hero .meta-row .k { color: var(--ink-3); }
+
+/* ambient backdrop word */
+.ambient-stage {
+  position: relative;
+  margin: var(--s-16) 0;
+  height: 220px;
+  border-top: 1px solid var(--surface-line);
+  border-bottom: 1px solid var(--surface-line);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 119px,
+      var(--surface-line-soft) 119px,
+      var(--surface-line-soft) 120px
+    ),
+    var(--surface-0);
+}
+.ambient-stage .word {
+  font-family: var(--font-display);
+  font-size: clamp(140px, 22vw, 360px);
+  letter-spacing: -0.05em;
+  font-weight: 500;
+  color: var(--ink-5);
+  line-height: 0.9;
+}
+.ambient-stage .label {
+  position: absolute;
+  top: 12px; left: 16px;
+}
+
+/* color */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-4);
+}
+.color-grid.surfaces { grid-template-columns: repeat(6, 1fr); }
+.color-grid.statuses { grid-template-columns: repeat(5, 1fr); }
+
+/* type stack */
+.type-stack { display: flex; flex-direction: column; gap: var(--s-8); }
+.type-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--s-6);
+  padding-bottom: var(--s-6);
+  border-bottom: 1px dashed var(--surface-line-soft);
+  align-items: baseline;
+}
+.type-row .meta { display: flex; flex-direction: column; gap: 4px; }
+.type-row .specimen { min-width: 0; overflow: hidden; }
+
+/* component grid */
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-6);
+}
+.comp-grid .span-2 { grid-column: span 2; }
+
+.comp-card {
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-4);
+  overflow: hidden;
+  box-shadow: var(--bevel);
+}
+.comp-card .head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--surface-line);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+}
+.comp-card .body {
+  padding: var(--s-6);
+  display: flex; flex-wrap: wrap; gap: var(--s-3);
+  align-items: center;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255,255,255,0.02), transparent 50%),
+    var(--surface-1);
+  min-height: 120px;
+}
+.comp-card .body.col { flex-direction: column; align-items: stretch; }
+
+/* spacing ramp */
+.space-ramp { display: flex; gap: var(--s-3); align-items: flex-end; }
+.space-ramp .step { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.space-ramp .bar { background: var(--orange-500); width: 28px; border-radius: var(--r-1); }
+
+/* radius ramp */
+.radius-ramp { display: flex; gap: var(--s-4); align-items: flex-end; flex-wrap: wrap; }
+.radius-ramp .chip {
+  width: 86px; height: 86px;
+  background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
+  border: 1px solid var(--surface-line);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 8px;
+  box-shadow: var(--bevel);
+}
+.radius-ramp .chip .lab {
+  font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3);
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+}
+
+/* ===== Mocked surfaces ===== */
+.demo-frame {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-4);
+  overflow: hidden;
+  box-shadow: var(--bevel), var(--shadow-md);
+}
+.demo-frame .demo-bar {
+  display: flex; gap: 8px; align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--surface-line);
+  background: var(--surface-1);
+}
+.demo-frame .demo-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-3); }
+.demo-frame .demo-bar .url {
+  margin-left: 8px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+  letter-spacing: var(--tracking-mono);
+}
+
+/* agent run mock */
+.run-shell { padding: var(--s-10) var(--s-8); display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--s-6); }
+.run-eyebrows { display: flex; gap: var(--s-3); align-items: center; margin-bottom: var(--s-4); }
+.run-title { font-family: var(--font-display); font-size: 44px; line-height: 1; letter-spacing: -0.03em; font-weight: 500; }
+.run-title .accent { color: var(--orange-500); }
+.run-sub { margin-top: var(--s-3); color: var(--ink-3); font-size: 14px; }
+
+.run-step-row { display: flex; flex-direction: column; gap: var(--s-3); margin-top: var(--s-6); }
+.run-step {
+  display: grid; grid-template-columns: 28px 1fr auto; gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-3);
+  background: var(--surface-1);
+  box-shadow: var(--bevel);
+  align-items: center;
+}
+.run-step.live { border-color: rgba(255,77,23,0.4); box-shadow: var(--bevel), 0 0 0 1px rgba(255,77,23,0.18) inset, 0 8px 24px -10px var(--orange-glow); }
+.run-step .num { font-family: var(--font-mono); font-size: 11px; color: var(--ink-4); letter-spacing: var(--tracking-wide); }
+.run-step .title { font-size: 14px; color: var(--ink-1); font-weight: 500; }
+.run-step .sub   { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); margin-top: 4px; }
+
+/* run history table */
+.history-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+.history-table thead th {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+  text-align: left;
+  padding: 14px var(--s-4);
+  border-bottom: 1px solid var(--surface-line);
+}
+.history-table tbody td {
+  padding: 14px var(--s-4);
+  border-bottom: 1px solid var(--surface-line-soft);
+  color: var(--ink-2);
+}
+.history-table tbody tr:hover td { background: var(--surface-1); }
+.history-table .agent {
+  display: inline-flex; align-items: center; gap: 10px;
+  color: var(--ink-1); font-weight: 500;
+}
+.history-table .agent .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--orange-500);
+  box-shadow: 0 0 8px var(--orange-glow);
+}
+.history-table .id-mono { font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+.history-table .dur { font-family: var(--font-mono); font-size: 12px; }
+
+/* footer */
+.kyn-foot {
+  max-width: 1280px; margin: var(--s-20) auto 0;
+  padding: var(--s-10) var(--s-10) 0;
+  border-top: 1px solid var(--surface-line);
+  display: flex; justify-content: space-between; align-items: baseline;
+  color: var(--ink-3); font-size: 12px; font-family: var(--font-mono);
+  letter-spacing: var(--tracking-mono);
+}
+
+/* small SVG inline icons */
+.i { width: 14px; height: 14px; flex-shrink: 0; }
+.i-orange { stroke: var(--orange-500); }
+
+/* progress meter (used in agent stream) */
+.meter {
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+  position: relative;
+}
+.meter > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange-500), var(--orange-300));
+  border-radius: var(--r-pill);
+}
+
+/* sparkline for charts */
+.spark {
+  width: 100%; height: 60px; display: block;
+}
+
+@media (max-width: 900px) {
+  .color-grid, .color-grid.surfaces, .color-grid.statuses { grid-template-columns: repeat(2, 1fr); }
+  .comp-grid { grid-template-columns: 1fr; }
+  .comp-grid .span-2 { grid-column: span 1; }
+  .run-shell { grid-template-columns: 1fr; }
+  .kyn-hero .meta-row { grid-template-columns: repeat(2, 1fr); }
+  .type-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body data-screen-label="00 Cover">
+
+<!-- ===================== TOPBAR ===================== -->
+<header class="kyn-topbar">
+  <div class="kyn-topbar-inner">
+    <div class="kyn-mark">
+      <span class="glyph"></span>
+      <span class="word">kyn<span class="reg">®</span></span>
+    </div>
+    <nav class="kyn-row" style="gap: var(--s-6);">
+      <span class="t-eyebrow">v0.1 · DESIGN SYSTEM</span>
+      <span class="badge badge-dot badge-orange"><span style="font-size:10.5px">LIVE DOC</span></span>
+    </nav>
+    <div class="kyn-row">
+      <button class="btn btn-ghost btn-sm">Tokens</button>
+      <button class="btn btn-primary btn-sm">Get the kit →</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="kyn-hero" data-screen-label="01 Cover">
+  <div class="kyn-hero-eyebrows">
+    <span class="badge badge-dot badge-orange" style="--c: var(--orange-500); color: var(--orange-500)"><span style="font-size:10.5px">ACTIVE</span></span>
+    <span class="t-eyebrow">DESIGN SYSTEM · AI AGENT PLATFORM · DARK-FIRST</span>
+  </div>
+  <h1>The system<br/>behind <span class="accent">kyn.</span></h1>
+  <p class="lede">
+    A focused token set for an agent platform — live runs, history, logs.
+    Built on a black canvas with a single orange signal, beveled surfaces,
+    and a typographic system that holds equally well in a 12px log row
+    and a 160px hero.
+  </p>
+
+  <div class="meta-row">
+    <div class="cell">
+      <span class="t-eyebrow">PALETTE</span>
+      <span class="v">Black · White · Orange</span>
+    </div>
+    <div class="cell">
+      <span class="t-eyebrow">TYPE</span>
+      <span class="v">Geist / Geist Mono</span>
+    </div>
+    <div class="cell">
+      <span class="t-eyebrow">SURFACES</span>
+      <span class="v">Beveled, layered</span>
+    </div>
+    <div class="cell">
+      <span class="t-eyebrow">VERSION</span>
+      <span class="v t-mono">0.1.0 · MAY 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== AMBIENT ===================== -->
+<div class="kyn-page" style="padding-top: 0;">
+  <div class="ambient-stage">
+    <span class="t-eyebrow label">AMBIENT DISPLAY · TYPE AS TEXTURE</span>
+    <span class="word">kyn</span>
+  </div>
+</div>
+
+<!-- ===================== 01 · COLOR ===================== -->
+<section class="kyn-page" data-screen-label="02 Color">
+  <header class="section-header">
+    <span class="t-sec-num">01</span>
+    <div>
+      <h2 class="t-display-md">Color</h2>
+      <p class="sub">Black ground, warm white type, one signal orange. Status hues are oklch-tuned to share lightness so they sit calmly together.</p>
+    </div>
+  </header>
+
+  <!-- brand -->
+  <div style="margin-bottom: var(--s-10);">
+    <div class="t-eyebrow" style="margin-bottom: var(--s-3);">SIGNAL · BRAND ACCENT</div>
+    <div class="color-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background: var(--orange-50);"></div>
+        <div class="swatch-meta"><span class="name">Orange / 50</span><span class="hex">#FFF3EC</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: var(--orange-300);"></div>
+        <div class="swatch-meta"><span class="name">Orange / 300</span><span class="hex">#FF8A4B</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: var(--orange-500); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.2), 0 0 24px var(--orange-glow);"></div>
+        <div class="swatch-meta"><span class="name">Orange / 500 — primary</span><span class="hex">#FF4D17</span></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background: var(--orange-700);"></div>
+        <div class="swatch-meta"><span class="name">Orange / 700</span><span class="hex">#B5310A</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- surfaces -->
+  <div style="margin-bottom: var(--s-10);">
+    <div class="t-eyebrow" style="margin-bottom: var(--s-3);">SURFACES · DARK STACK</div>
+    <div class="color-grid surfaces">
+      <div class="swatch"><div class="swatch-color" style="background: var(--surface-0);"></div><div class="swatch-meta"><span class="name">Surface 0</span><span class="hex">#08090A</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--surface-1);"></div><div class="swatch-meta"><span class="name">Surface 1</span><span class="hex">#0E0F11</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--surface-2);"></div><div class="swatch-meta"><span class="name">Surface 2</span><span class="hex">#14161A</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--surface-3);"></div><div class="swatch-meta"><span class="name">Surface 3</span><span class="hex">#1B1E23</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--surface-4);"></div><div class="swatch-meta"><span class="name">Surface 4</span><span class="hex">#23272E</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--surface-line);"></div><div class="swatch-meta"><span class="name">Line</span><span class="hex">#2A2E36</span></div></div>
+    </div>
+  </div>
+
+  <!-- ink -->
+  <div style="margin-bottom: var(--s-10);">
+    <div class="t-eyebrow" style="margin-bottom: var(--s-3);">INK · TEXT</div>
+    <div class="color-grid">
+      <div class="swatch"><div class="swatch-color" style="background: var(--ink-1);"></div><div class="swatch-meta"><span class="name">Ink 1</span><span class="hex">#F4F1EC</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--ink-2);"></div><div class="swatch-meta"><span class="name">Ink 2</span><span class="hex">#C7C4BD</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--ink-3);"></div><div class="swatch-meta"><span class="name">Ink 3</span><span class="hex">#8E8B85</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--ink-4);"></div><div class="swatch-meta"><span class="name">Ink 4</span><span class="hex">#5A5853</span></div></div>
+    </div>
+  </div>
+
+  <!-- status -->
+  <div>
+    <div class="t-eyebrow" style="margin-bottom: var(--s-3);">STATUS · CALIBRATED OKLCH</div>
+    <div class="color-grid statuses">
+      <div class="swatch"><div class="swatch-color" style="background: var(--status-strong);"></div><div class="swatch-meta"><span class="name">Strong</span><span class="hex">L0.78 · H150</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--status-mixed);"></div><div class="swatch-meta"><span class="name">Mixed</span><span class="hex">L0.78 · H70</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--status-emerging);"></div><div class="swatch-meta"><span class="name">Emerging</span><span class="hex">L0.74 · H295</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--status-divided);"></div><div class="swatch-meta"><span class="name">Divided</span><span class="hex">L0.74 · H25</span></div></div>
+      <div class="swatch"><div class="swatch-color" style="background: var(--status-weak);"></div><div class="swatch-meta"><span class="name">Weak / neutral</span><span class="hex">L0.65 · H80</span></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="kyn-divider" style="max-width:1280px;margin-left:auto;margin-right:auto;"></div>
+
+<!-- ===================== 02 · TYPE ===================== -->
+<section class="kyn-page" data-screen-label="03 Type">
+  <header class="section-header">
+    <span class="t-sec-num">02</span>
+    <div>
+      <h2 class="t-display-md">Typography</h2>
+      <p class="sub">Geist holds a wide voice — confident at display, calm at body. Geist Mono carries technical surfaces (timestamps, ids, eyebrows, log streams).</p>
+    </div>
+  </header>
+
+  <div class="type-stack">
+    <div class="type-row">
+      <div class="meta">
+        <span class="t-eyebrow">DISPLAY · AMBIENT</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">Geist 500 · 168 / 0.9 · −0.045em</span>
+        <span class="t-meta">Hero, section opener.</span>
+      </div>
+      <div class="specimen"><div class="t-display-xl" style="font-size: 96px;">Real-time agents.</div></div>
+    </div>
+    <div class="type-row">
+      <div class="meta">
+        <span class="t-eyebrow">DISPLAY · LARGE</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">Geist 500 · 64 / 1 · −0.035em</span>
+        <span class="t-meta">Page titles, hero supports.</span>
+      </div>
+      <div class="specimen"><div class="t-display-lg">Trending runs <span style="color:var(--orange-500)">today</span></div></div>
+    </div>
+    <div class="type-row">
+      <div class="meta">
+        <span class="t-eyebrow">DISPLAY · MEDIUM</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">Geist 500 · 40 / 1.05 · −0.035em</span>
+        <span class="t-meta">Section headers.</span>
+      </div>
+      <div class="specimen"><div class="t-display-md">A typographic system you can trust at 12px.</div></div>
+    </div>
+    <div class="type-row">
+      <div class="meta">
+        <span class="t-eyebrow">H1 · H2 · H3</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">Geist 600 · 32 / 22 / 17</span>
+      </div>
+      <div class="specimen kyn-col" style="gap: var(--s-3);">
+        <div class="t-h1">Agent observability</div>
+        <div class="t-h2">Run · auth-flow-inspector</div>
+        <div class="t-h3">Tool result · cache:report</div>
+      </div>
+    </div>
+    <div class="type-row">
+      <div class="meta">
+        <span class="t-eyebrow">BODY · BODY-SM · META</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">Geist 400 · 15 / 13 / 12</span>
+      </div>
+      <div class="specimen kyn-col">
+        <p class="t-body" style="margin: 0;">An autonomous agent interprets the request, plans tool calls, executes them in sequence, and synthesizes a structured response. Each step streams to the live activity panel.</p>
+        <p class="t-body-sm" style="margin: 0;">Smaller body sizes step down by 2px and lose a notch of color weight to keep the hierarchy legible without bolding.</p>
+        <p class="t-meta" style="margin: 0;">Meta · ids, footnotes, captions.</p>
+      </div>
+    </div>
+    <div class="type-row">
+      <div class="meta">
+        <span class="t-eyebrow">EYEBROW · MONO</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">Geist Mono 500 · 11 · 0.12em · UPPER</span>
+      </div>
+      <div class="specimen kyn-row" style="gap: var(--s-6);">
+        <span class="t-eyebrow">RESEARCH · ACCELERATING</span>
+        <span class="t-eyebrow t-eyebrow-orange">● LIVE · 3 AGENTS</span>
+        <span class="t-eyebrow">UPDATED 2H AGO</span>
+      </div>
+    </div>
+    <div class="type-row">
+      <div class="meta">
+        <span class="t-eyebrow">MONO · TECHNICAL</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">Geist Mono 400 · 13</span>
+      </div>
+      <div class="specimen">
+        <div class="kyn-well t-mono">
+          <span style="color:var(--ink-4)">28:37.23</span>&nbsp;
+          <span style="color:var(--status-strong)">tool.result</span>&nbsp;
+          <span style="color:var(--ink-1)">cache:report</span>&nbsp;
+          <span style="color:var(--orange-500)">Tirzepatide</span> — cached
+          <span style="color:var(--ink-4)">·</span>
+          <span style="color:var(--ink-3)">0ms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="kyn-divider" style="max-width:1280px;margin-left:auto;margin-right:auto;"></div>
+
+<!-- ===================== 03 · SPACE & SHAPE ===================== -->
+<section class="kyn-page" data-screen-label="04 Space and Shape">
+  <header class="section-header">
+    <span class="t-sec-num">03</span>
+    <div>
+      <h2 class="t-display-md">Space &amp; shape</h2>
+      <p class="sub">A 4px ramp underpins everything. Radius is generous on cards (16px) and full-pill on actions, echoing the pill-button voice from relats.</p>
+    </div>
+  </header>
+
+  <div class="comp-grid">
+    <div class="comp-card span-2">
+      <div class="head"><span class="t-eyebrow">SPACING · 4PX BASE</span><span class="t-mono-sm" style="color:var(--ink-3)">--s-1 → --s-32</span></div>
+      <div class="body">
+        <div class="space-ramp" style="width:100%; justify-content: space-between;">
+          <div class="step"><div class="bar" style="height:4px"></div><span class="t-mono-sm" style="color:var(--ink-3)">1·4</span></div>
+          <div class="step"><div class="bar" style="height:8px"></div><span class="t-mono-sm" style="color:var(--ink-3)">2·8</span></div>
+          <div class="step"><div class="bar" style="height:12px"></div><span class="t-mono-sm" style="color:var(--ink-3)">3·12</span></div>
+          <div class="step"><div class="bar" style="height:16px"></div><span class="t-mono-sm" style="color:var(--ink-3)">4·16</span></div>
+          <div class="step"><div class="bar" style="height:24px"></div><span class="t-mono-sm" style="color:var(--ink-3)">6·24</span></div>
+          <div class="step"><div class="bar" style="height:32px"></div><span class="t-mono-sm" style="color:var(--ink-3)">8·32</span></div>
+          <div class="step"><div class="bar" style="height:48px"></div><span class="t-mono-sm" style="color:var(--ink-3)">12·48</span></div>
+          <div class="step"><div class="bar" style="height:64px"></div><span class="t-mono-sm" style="color:var(--ink-3)">16·64</span></div>
+          <div class="step"><div class="bar" style="height:96px"></div><span class="t-mono-sm" style="color:var(--ink-3)">24·96</span></div>
+          <div class="step"><div class="bar" style="height:128px"></div><span class="t-mono-sm" style="color:var(--ink-3)">32·128</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="head"><span class="t-eyebrow">RADIUS</span><span class="t-mono-sm" style="color:var(--ink-3)">4 · 8 · 12 · 16 · 20 · pill</span></div>
+      <div class="body">
+        <div class="radius-ramp">
+          <div class="chip" style="border-radius: 4px;"><span class="lab">4</span></div>
+          <div class="chip" style="border-radius: 8px;"><span class="lab">8</span></div>
+          <div class="chip" style="border-radius: 12px;"><span class="lab">12</span></div>
+          <div class="chip" style="border-radius: 16px;"><span class="lab">16</span></div>
+          <div class="chip" style="border-radius: 20px;"><span class="lab">20</span></div>
+          <div class="chip" style="border-radius: 999px;"><span class="lab">pill</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comp-card">
+      <div class="head"><span class="t-eyebrow">BEVEL · ELEVATION</span><span class="t-mono-sm" style="color:var(--ink-3)">inset highlight + drop</span></div>
+      <div class="body" style="gap: var(--s-4);">
+        <div style="flex:1; padding: 18px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--surface-line); box-shadow: var(--bevel);">
+          <div class="t-eyebrow" style="margin-bottom: 6px;">BEVEL</div>
+          <div class="t-meta">subtle inner highlight, soft inner floor</div>
+        </div>
+        <div style="flex:1; padding: 18px; border-radius: 12px; background: linear-gradient(180deg, var(--surface-2), var(--surface-1)); border: 1px solid var(--surface-line); box-shadow: var(--bevel-strong), var(--shadow-md);">
+          <div class="t-eyebrow" style="margin-bottom: 6px;">CARD</div>
+          <div class="t-meta">bevel + drop shadow</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="kyn-divider" style="max-width:1280px;margin-left:auto;margin-right:auto;"></div>
+
+<!-- ===================== 04 · COMPONENTS ===================== -->
+<section class="kyn-page" data-screen-label="05 Components">
+  <header class="section-header">
+    <span class="t-sec-num">04</span>
+    <div>
+      <h2 class="t-display-md">Components</h2>
+      <p class="sub">Action language is calm. Orange is reserved for primary intent and live signal — everything else is held in greyscale.</p>
+    </div>
+  </header>
+
+  <div class="comp-grid">
+
+    <!-- buttons -->
+    <div class="comp-card span-2">
+      <div class="head">
+        <span class="t-eyebrow">BUTTONS · PILL · PRIMARY / GHOST / QUIET</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">.btn .btn-primary .btn-ghost .btn-quiet</span>
+      </div>
+      <div class="body" style="gap: var(--s-4);">
+        <button class="btn btn-primary">Run agent <svg class="i" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button class="btn btn-primary btn-lg">Generate report →</button>
+        <button class="btn btn-ghost">Browse history</button>
+        <button class="btn btn-quiet">Pause stream</button>
+        <button class="btn btn-ghost btn-sm">Filter ↓</button>
+        <button class="btn-icon" aria-label="search"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+        <button class="btn-icon" aria-label="settings"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      </div>
+    </div>
+
+    <!-- badges -->
+    <div class="comp-card span-2">
+      <div class="head">
+        <span class="t-eyebrow">STATUS BADGES · LABELLED PILLS</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">.badge.badge-{strong|mixed|emerging|divided|weak|orange}</span>
+      </div>
+      <div class="body" style="gap: var(--s-3) var(--s-3);">
+        <div class="kyn-row"><span class="badge-label">SIGNAL</span><span class="badge badge-strong">HIGH</span></div>
+        <div class="kyn-row"><span class="badge-label">CONSENSUS</span><span class="badge badge-strong">STRONG</span></div>
+        <div class="kyn-row"><span class="badge-label">SENTIMENT</span><span class="badge badge-mixed">MIXED</span></div>
+        <div class="kyn-row"><span class="badge-label">RESEARCH</span><span class="badge badge-emerging">ACCELERATING</span></div>
+        <div class="kyn-row"><span class="badge-label">RISK</span><span class="badge badge-divided">DIVIDED</span></div>
+        <div class="kyn-row"><span class="badge-label">RUN</span><span class="badge badge-weak">QUEUED</span></div>
+        <div class="kyn-row"><span class="badge badge-dot badge-orange">LIVE</span></div>
+        <div class="kyn-row"><span class="badge badge-dot badge-strong">STREAMING</span></div>
+        <div class="kyn-row"><span class="badge badge-orange">● TRENDING</span></div>
+      </div>
+    </div>
+
+    <!-- inputs -->
+    <div class="comp-card">
+      <div class="head"><span class="t-eyebrow">SEARCH · COMMAND</span><span class="t-mono-sm" style="color:var(--ink-3)">.kyn-search</span></div>
+      <div class="body col">
+        <div class="kyn-search">
+          <svg class="i" style="color:var(--ink-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input class="kyn-search-input" placeholder="Search runs, agents, tools…" />
+          <button class="btn btn-primary btn-sm">Run agent →</button>
+        </div>
+        <input class="kyn-input" placeholder="Default input · pulls into orange focus" />
+      </div>
+    </div>
+
+    <!-- input chips -->
+    <div class="comp-card">
+      <div class="head"><span class="t-eyebrow">CATEGORY CHIPS</span><span class="t-mono-sm" style="color:var(--ink-3)">.btn.btn-quiet</span></div>
+      <div class="body">
+        <button class="btn btn-quiet btn-sm">Auth flows</button>
+        <button class="btn btn-quiet btn-sm">Data extraction</button>
+        <button class="btn btn-quiet btn-sm">Code review</button>
+        <button class="btn btn-quiet btn-sm">Onboarding</button>
+        <button class="btn btn-quiet btn-sm">Support triage</button>
+        <button class="btn btn-quiet btn-sm">Billing checks</button>
+      </div>
+    </div>
+
+    <!-- card with stats -->
+    <div class="comp-card span-2">
+      <div class="head"><span class="t-eyebrow">CARD · BEVELED · STAT GRID</span><span class="t-mono-sm" style="color:var(--ink-3)">.kyn-card .statgrid .stat-cell</span></div>
+      <div class="body" style="display:grid; grid-template-columns: 1.2fr 1fr; gap: var(--s-4); align-items: stretch;">
+        <div class="kyn-card" style="margin: 0;">
+          <div class="kyn-row" style="justify-content: space-between;">
+            <span class="t-eyebrow">RUN · 0247</span>
+            <span class="badge badge-dot badge-orange">LIVE</span>
+          </div>
+          <div class="t-h2" style="margin-top: 14px;">auth-flow-inspector</div>
+          <div class="t-meta" style="margin-top: 4px;">also: oauth-debug, sso-trace</div>
+          <p class="t-body" style="margin-top: 14px; color: var(--ink-2);">Inspects an auth flow end-to-end. Captures redirects, token exchanges, and cookie state across hops.</p>
+
+          <div class="statgrid" style="grid-template-columns: repeat(4, 1fr); margin-top: var(--s-4);">
+            <div class="stat-cell"><span class="t-eyebrow">SIGNAL</span><span class="badge badge-strong">HIGH</span></div>
+            <div class="stat-cell"><span class="t-eyebrow">SENTIMENT</span><span class="badge badge-strong">STABLE</span></div>
+            <div class="stat-cell"><span class="t-eyebrow">RESEARCH</span><span class="badge badge-emerging">ACTIVE</span></div>
+            <div class="stat-cell"><span class="t-eyebrow">RISK</span><span class="badge badge-mixed">MEDIUM</span></div>
+          </div>
+
+          <div class="kyn-well" style="margin-top: var(--s-4);">
+            <div class="kyn-row" style="justify-content: space-between; margin-bottom: 10px;">
+              <span class="t-eyebrow">PROGRESS · STEP 4 / 7</span>
+              <span class="t-mono-sm" style="color: var(--orange-500);">+57%</span>
+            </div>
+            <div class="meter"><i style="width: 57%"></i></div>
+          </div>
+
+          <div class="kyn-row" style="justify-content: space-between; margin-top: var(--s-4);">
+            <span class="badge badge-mixed">RISK MODERATE</span>
+            <a href="#" class="t-h3" style="color: var(--orange-500); text-decoration: none;">View intelligence →</a>
+          </div>
+        </div>
+
+        <!-- log card -->
+        <div class="kyn-card" style="margin: 0; padding: 0;">
+          <div class="kyn-row" style="justify-content: space-between; padding: var(--s-4) var(--s-4) var(--s-2);">
+            <span class="t-eyebrow t-eyebrow-orange">● AGENT ACTIVITY</span>
+            <span class="badge badge-dot badge-strong">LIVE</span>
+          </div>
+          <div class="kyn-log" style="border: 0; border-radius: 0; padding: 0 var(--s-4) var(--s-4);">
+            <div class="row"><span class="ts">28:37.10</span><span><span class="lvl-ok">tool.result</span>  <span class="tag">cache:report</span> <span style="color:var(--ink-1)">Tirzepatide</span> — <span class="dim">cached · 0ms</span></span></div>
+            <div class="row"><span class="ts">28:37.23</span><span><span class="lvl-ok">tool.result</span>  <span class="tag">cache:report</span> <span style="color:var(--ink-1)">Semaglutide</span> — <span class="dim">cached · 0ms</span></span></div>
+            <div class="row"><span class="ts">28:37.28</span><span><span class="lvl-info">tool.call</span>  <span style="color:var(--ink-1)">http.get</span> <span class="dim">peptdb.io/v1/c/</span></span></div>
+            <div class="row"><span class="ts">28:37.33</span><span><span class="lvl-warn">tool.retry</span>  <span class="dim">backoff 240ms · attempt 2</span></span></div>
+            <div class="row"><span class="ts">28:37.38</span><span><span class="lvl-ok">tool.result</span>  <span class="tag">cache:report</span> <span style="color:var(--ink-1)">AOD-9604</span> — <span class="dim">cached · 0ms</span></span></div>
+            <div class="row"><span class="ts">28:37.43</span><span><span class="lvl-info">replay</span>  <span class="dim">synthesizing report [synthesize]</span></span></div>
+            <div class="row"><span class="ts">28:37.59</span><span><span class="lvl-ok">report.ready</span>  <span style="color:var(--ink-1)">5</span> <span class="dim">structured briefs</span></span></div>
+            <div class="row"><span class="ts">28:37.59</span><span><span class="dim">■ stream closed</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="kyn-divider" style="max-width:1280px;margin-left:auto;margin-right:auto;"></div>
+
+<!-- ===================== 05 · IN SITU — RUN STREAM ===================== -->
+<section class="kyn-page" data-screen-label="06 In situ — Live run">
+  <header class="section-header">
+    <span class="t-sec-num">05</span>
+    <div>
+      <h2 class="t-display-md">In&nbsp;situ · Live run</h2>
+      <p class="sub">The system on a real surface. Same tokens, same components — composed into the agent stream the app actually ships.</p>
+    </div>
+  </header>
+
+  <div class="demo-frame">
+    <div class="demo-bar">
+      <div class="dot" style="background:#FF5F57"></div>
+      <div class="dot" style="background:#FEBC2E"></div>
+      <div class="dot" style="background:#28C840"></div>
+      <div class="url">kyn.app/run/0247</div>
+      <div style="flex:1"></div>
+      <span class="badge badge-dot badge-orange">LIVE</span>
+    </div>
+
+    <div class="run-shell">
+      <!-- left: title + steps -->
+      <div>
+        <div class="run-eyebrows">
+          <span class="t-eyebrow">RUN · 0247</span>
+          <span class="badge badge-dot badge-orange">STREAMING</span>
+        </div>
+        <h3 class="run-title">auth-flow-<span class="accent">inspector</span></h3>
+        <p class="run-sub">Tracing redirects and token exchanges for acme-corp.com · started 02:14 ago</p>
+
+        <div class="run-step-row">
+          <div class="run-step">
+            <span class="num">01</span>
+            <div>
+              <div class="title">Plan tool sequence</div>
+              <div class="sub">3 tools queued · model.geist-3.haiku</div>
+            </div>
+            <span class="badge badge-strong">DONE</span>
+          </div>
+          <div class="run-step">
+            <span class="num">02</span>
+            <div>
+              <div class="title">Fetch /authorize endpoint</div>
+              <div class="sub">http.get · 312ms · 200 OK</div>
+            </div>
+            <span class="badge badge-strong">DONE</span>
+          </div>
+          <div class="run-step">
+            <span class="num">03</span>
+            <div>
+              <div class="title">Capture redirect chain</div>
+              <div class="sub">5 hops · 2 cookies · 1 cross-domain</div>
+            </div>
+            <span class="badge badge-strong">DONE</span>
+          </div>
+          <div class="run-step live">
+            <span class="num">04</span>
+            <div>
+              <div class="title">Decode token exchange</div>
+              <div class="sub">jwt.parse · in flight · 1.8s</div>
+            </div>
+            <span class="badge badge-dot badge-orange">RUNNING</span>
+          </div>
+          <div class="run-step" style="opacity: 0.55;">
+            <span class="num">05</span>
+            <div>
+              <div class="title">Cross-reference IDP claims</div>
+              <div class="sub">queued</div>
+            </div>
+            <span class="badge badge-weak">QUEUED</span>
+          </div>
+          <div class="run-step" style="opacity: 0.4;">
+            <span class="num">06</span>
+            <div>
+              <div class="title">Synthesize trace report</div>
+              <div class="sub">queued</div>
+            </div>
+            <span class="badge badge-weak">QUEUED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- right: log + meter + chart -->
+      <div class="kyn-col" style="gap: var(--s-4);">
+        <div class="kyn-card" style="padding: var(--s-4);">
+          <div class="kyn-row" style="justify-content: space-between; margin-bottom: var(--s-3);">
+            <span class="t-eyebrow">DISCUSSION VELOCITY · 24-WEEK</span>
+            <span class="t-mono-sm" style="color: var(--orange-500);">+248%</span>
+          </div>
+          <svg class="spark" viewBox="0 0 280 60" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#FF4D17" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#FF4D17" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,52 L14,50 L28,49 L42,46 L56,45 L70,42 L84,40 L98,38 L112,36 L126,33 L140,32 L154,30 L168,26 L182,25 L196,22 L210,20 L224,17 L238,16 L252,12 L266,9 L280,6 L280,60 L0,60 Z" fill="url(#g1)"/>
+            <path d="M0,52 L14,50 L28,49 L42,46 L56,45 L70,42 L84,40 L98,38 L112,36 L126,33 L140,32 L154,30 L168,26 L182,25 L196,22 L210,20 L224,17 L238,16 L252,12 L266,9 L280,6" fill="none" stroke="#FF4D17" stroke-width="1.6"/>
+          </svg>
+        </div>
+
+        <div class="kyn-card" style="padding: 0;">
+          <div class="kyn-row" style="justify-content: space-between; padding: var(--s-4) var(--s-4) var(--s-2);">
+            <span class="t-eyebrow t-eyebrow-orange">● AGENT ACTIVITY</span>
+            <span class="t-mono-sm" style="color:var(--ink-3)">13 events</span>
+          </div>
+          <div class="kyn-log" style="border: 0; border-radius: 0; padding: 0 var(--s-4) var(--s-4);">
+            <div class="row"><span class="ts">02:14.10</span><span><span class="lvl-ok">tool.result</span>  <span class="tag">http.get</span> <span class="dim">/authorize · 312ms</span></span></div>
+            <div class="row"><span class="ts">02:14.31</span><span><span class="lvl-ok">trace.hop</span>  <span style="color:var(--ink-1)">acme-idp.com</span> <span class="dim">→ acme-app.com</span></span></div>
+            <div class="row"><span class="ts">02:14.38</span><span><span class="lvl-info">cookie.set</span>  <span class="dim">__Host-Session · SameSite=Strict</span></span></div>
+            <div class="row"><span class="ts">02:14.52</span><span><span class="lvl-warn">jwt.warn</span>  <span class="dim">aud claim missing</span></span></div>
+            <div class="row"><span class="ts">02:14.66</span><span><span class="lvl-info">tool.call</span>  <span style="color:var(--ink-1)">jwt.parse</span> <span class="dim">in flight</span></span></div>
+            <div class="row"><span class="ts">02:14.68</span><span><span class="dim">▌ stream open</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="kyn-divider" style="max-width:1280px;margin-left:auto;margin-right:auto;"></div>
+
+<!-- ===================== 06 · IN SITU — HISTORY ===================== -->
+<section class="kyn-page" data-screen-label="07 In situ — Run history">
+  <header class="section-header">
+    <span class="t-sec-num">06</span>
+    <div>
+      <h2 class="t-display-md">In&nbsp;situ · Run history</h2>
+      <p class="sub">Same system, dense data surface. Mono in the technical columns; pill statuses; ample row height to read at a glance.</p>
+    </div>
+  </header>
+
+  <div class="kyn-card" style="padding: 0;">
+    <div class="kyn-row" style="justify-content: space-between; padding: var(--s-5) var(--s-6); border-bottom: 1px solid var(--surface-line);">
+      <div class="kyn-row" style="gap: var(--s-3);">
+        <span class="t-h3">Run history</span>
+        <span class="t-mono-sm" style="color:var(--ink-3)">· 24 RUNS · LAST 7 DAYS</span>
+      </div>
+      <div class="kyn-row" style="gap: var(--s-2);">
+        <button class="btn btn-quiet btn-sm">Today</button>
+        <button class="btn btn-ghost btn-sm">7d</button>
+        <button class="btn btn-ghost btn-sm">30d</button>
+      </div>
+    </div>
+
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th style="width: 70px;">ID</th>
+          <th>Agent</th>
+          <th>Status</th>
+          <th>Started</th>
+          <th>Duration</th>
+          <th>Events</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="id-mono">0247</td>
+          <td><span class="agent"><span class="dot"></span>auth-flow-inspector</span></td>
+          <td><span class="badge badge-dot badge-orange">LIVE</span></td>
+          <td class="dur">02:14 ago</td>
+          <td class="dur" style="color:var(--orange-500)">2.1s</td>
+          <td class="dur">13</td>
+          <td><a class="t-h3" style="color: var(--orange-500); text-decoration: none;" href="#">→</a></td>
+        </tr>
+        <tr>
+          <td class="id-mono">0246</td>
+          <td><span class="agent"><span class="dot" style="background:var(--status-strong); box-shadow: 0 0 8px var(--status-strong)"></span>data-extractor</span></td>
+          <td><span class="badge badge-strong">DONE</span></td>
+          <td class="dur">14m ago</td>
+          <td class="dur">8.4s</td>
+          <td class="dur">42</td>
+          <td><a class="t-h3" style="color: var(--ink-2); text-decoration: none;" href="#">→</a></td>
+        </tr>
+        <tr>
+          <td class="id-mono">0245</td>
+          <td><span class="agent"><span class="dot" style="background:var(--status-mixed); box-shadow: 0 0 8px var(--status-mixed)"></span>support-triager</span></td>
+          <td><span class="badge badge-mixed">PARTIAL</span></td>
+          <td class="dur">38m ago</td>
+          <td class="dur">12.0s</td>
+          <td class="dur">81</td>
+          <td><a class="t-h3" style="color: var(--ink-2); text-decoration: none;" href="#">→</a></td>
+        </tr>
+        <tr>
+          <td class="id-mono">0244</td>
+          <td><span class="agent"><span class="dot" style="background:var(--status-strong); box-shadow: 0 0 8px var(--status-strong)"></span>code-reviewer</span></td>
+          <td><span class="badge badge-strong">DONE</span></td>
+          <td class="dur">1h ago</td>
+          <td class="dur">3.7s</td>
+          <td class="dur">19</td>
+          <td><a class="t-h3" style="color: var(--ink-2); text-decoration: none;" href="#">→</a></td>
+        </tr>
+        <tr>
+          <td class="id-mono">0243</td>
+          <td><span class="agent"><span class="dot" style="background:var(--status-divided); box-shadow: 0 0 8px var(--status-divided)"></span>billing-reconciler</span></td>
+          <td><span class="badge badge-divided">FAILED</span></td>
+          <td class="dur">2h ago</td>
+          <td class="dur">0.9s</td>
+          <td class="dur">4</td>
+          <td><a class="t-h3" style="color: var(--ink-2); text-decoration: none;" href="#">→</a></td>
+        </tr>
+        <tr>
+          <td class="id-mono">0242</td>
+          <td><span class="agent"><span class="dot" style="background:var(--status-strong); box-shadow: 0 0 8px var(--status-strong)"></span>onboarding-coach</span></td>
+          <td><span class="badge badge-strong">DONE</span></td>
+          <td class="dur">3h ago</td>
+          <td class="dur">14.2s</td>
+          <td class="dur">63</td>
+          <td><a class="t-h3" style="color: var(--ink-2); text-decoration: none;" href="#">→</a></td>
+        </tr>
+        <tr>
+          <td class="id-mono">0241</td>
+          <td><span class="agent"><span class="dot" style="background:var(--status-emerging); box-shadow: 0 0 8px var(--status-emerging)"></span>doc-summarizer</span></td>
+          <td><span class="badge badge-emerging">REPLAY</span></td>
+          <td class="dur">5h ago</td>
+          <td class="dur">6.0s</td>
+          <td class="dur">28</td>
+          <td><a class="t-h3" style="color: var(--ink-2); text-decoration: none;" href="#">→</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="kyn-foot">
+  <span>KYN · DESIGN SYSTEM · V0.1.0</span>
+  <span>BLEND OF RELATS · PEPTSIGHT — DARK + ORANGE</span>
+</footer>
+
+</body>
+</html>

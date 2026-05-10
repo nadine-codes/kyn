@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kyn — A company brain that does the work.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  body { overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ============= LAYOUT ============= */
+  .lp-shell { max-width: 1320px; margin: 0 auto; padding: 0 var(--s-8); }
+  .lp-rule  { height: 1px; background: var(--surface-line); width: 100%; }
+
+  /* ============= TOPBAR ============= */
+  .lp-top {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in oklch, var(--surface-0) 86%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--surface-line);
+  }
+  .lp-top-inner { max-width: 1320px; margin: 0 auto; padding: 14px var(--s-8); display: flex; align-items: center; justify-content: space-between; gap: var(--s-6); }
+  .lp-mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-1); }
+  .lp-mark .glyph {
+    width: 26px; height: 26px;
+    background: var(--orange-500);
+    border-radius: 7px;
+    position: relative;
+    box-shadow: var(--bevel), 0 1px 0 rgba(0,0,0,0.4);
+    display: inline-block;
+  }
+  .lp-mark .glyph::after {
+    content: ""; position: absolute; inset: 6px;
+    border: 2px solid #fff; border-radius: 3px;
+    border-right-color: transparent; border-bottom-color: transparent;
+    transform: rotate(45deg);
+  }
+  .lp-mark .word {
+    font-family: var(--font-display);
+    font-size: 17px; font-weight: 600; letter-spacing: -0.02em;
+  }
+  .lp-mark .reg {
+    font-family: var(--font-mono); font-size: 9px; color: var(--ink-3);
+    margin-left: 2px; letter-spacing: 0.1em; text-transform: uppercase;
+    vertical-align: super;
+  }
+  .lp-nav { display: flex; gap: var(--s-6); align-items: center; }
+  .lp-nav a { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); transition: color var(--dur-2); }
+  .lp-nav a:hover { color: var(--ink-1); }
+
+  /* ============= HERO ============= */
+  .hero { position: relative; padding: 96px 0 80px; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--s-12); align-items: end; position: relative; z-index: 2; }
+  .hero-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: var(--s-6); }
+  .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--orange-500); box-shadow: 0 0 12px var(--orange-glow); }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(56px, 7.6vw, 124px);
+    line-height: 0.92; letter-spacing: -0.04em; font-weight: 500;
+    color: var(--ink-1); margin: 0; text-wrap: balance;
+  }
+  .hero h1 .accent { color: var(--orange-500); font-style: italic; font-weight: 400; }
+  .hero-sub {
+    font-family: var(--font-display); font-size: clamp(18px, 1.5vw, 22px); line-height: 1.4;
+    color: var(--ink-2); max-width: 44ch; margin: var(--s-8) 0 0;
+    text-wrap: pretty;
+  }
+  .hero-meta { padding-bottom: 8px; }
+  .hero-meta .label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-4); }
+  .hero-meta .body  { font-family: var(--font-display); font-size: 17px; line-height: 1.55; color: var(--ink-2); margin-top: 10px; max-width: 32ch; text-wrap: pretty; }
+
+  .hero-ctas { display: flex; gap: var(--s-3); margin-top: var(--s-8); flex-wrap: wrap; }
+  .btn-cta-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--orange-500); color: #fff; border: 0;
+    border-radius: var(--r-pill); padding: 14px 22px;
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    box-shadow: var(--bevel), 0 8px 24px -8px var(--orange-glow);
+    cursor: pointer; transition: transform var(--dur-1), background var(--dur-2);
+  }
+  .btn-cta-primary:hover { background: var(--orange-600); transform: translateY(-1px); }
+  .btn-cta-ghost {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--surface-2); color: var(--ink-1); border: 1px solid var(--surface-line);
+    border-radius: var(--r-pill); padding: 13px 20px;
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    box-shadow: var(--bevel); cursor: pointer; transition: background var(--dur-2);
+  }
+  .btn-cta-ghost:hover { background: var(--surface-3); }
+  .arrow { width: 14px; height: 14px; }
+
+  /* Ambient backdrop word */
+  .hero-ambient {
+    position: absolute; left: 50%; top: 22%; transform: translateX(-50%);
+    font-family: var(--font-display);
+    font-size: clamp(220px, 30vw, 460px);
+    color: var(--ink-5); opacity: 0.55;
+    letter-spacing: -0.05em; line-height: 0.85; font-weight: 500;
+    pointer-events: none; user-select: none; z-index: 1;
+    white-space: nowrap;
+  }
+  .hero-stats { display: flex; gap: var(--s-8); margin-top: var(--s-12); border-top: 1px solid var(--surface-line); padding-top: var(--s-6); }
+  .hero-stats .cell { display: flex; flex-direction: column; gap: 4px; }
+  .hero-stats .num { font-family: var(--font-display); font-size: 32px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink-1); }
+  .hero-stats .lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); }
+
+  /* ============= SECTION HEADERS ============= */
+  .sec { padding: 96px 0; position: relative; }
+  .sec-head { display: grid; grid-template-columns: 80px 1fr; gap: var(--s-6); align-items: end; margin-bottom: var(--s-12); }
+  .sec-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); padding-top: 14px; border-top: 1px solid var(--surface-line); }
+  .sec-title { font-family: var(--font-display); font-size: clamp(34px, 4vw, 56px); line-height: 1.02; letter-spacing: -0.03em; font-weight: 500; color: var(--ink-1); margin: 0; max-width: 22ch; text-wrap: balance; padding-top: 14px; border-top: 1px solid var(--surface-line); }
+
+  /* ============= CAPABILITIES ============= */
+  .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-3); }
+  .cap {
+    background: var(--surface-2); border: 1px solid var(--surface-line);
+    border-radius: var(--r-4); padding: var(--s-6);
+    box-shadow: var(--bevel), var(--shadow-md);
+    display: flex; flex-direction: column; gap: var(--s-4); min-height: 280px;
+    position: relative; overflow: hidden;
+    transition: transform var(--dur-2), border-color var(--dur-2);
+  }
+  .cap:hover { transform: translateY(-2px); border-color: var(--surface-3); }
+  .cap .glyph-box {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--surface-3); border: 1px solid var(--surface-line);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--orange-500);
+    box-shadow: var(--bevel);
+  }
+  .cap .glyph-box svg { width: 20px; height: 20px; }
+  .cap .name { font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink-1); }
+  .cap .desc { font-family: var(--font-display); font-size: 13.5px; line-height: 1.5; color: var(--ink-2); flex: 1; text-wrap: pretty; }
+  .cap .tag { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); }
+  .cap.feat { background: linear-gradient(180deg, color-mix(in oklch, var(--orange-500) 8%, var(--surface-2)), var(--surface-2)); border-color: color-mix(in oklch, var(--orange-500) 30%, var(--surface-line)); }
+  .cap.feat .tag { color: var(--orange-500); }
+
+  /* ============= FLOW DIAGRAM ============= */
+  .flow {
+    background: var(--surface-1); border: 1px solid var(--surface-line);
+    border-radius: var(--r-5); padding: var(--s-12) var(--s-10);
+    box-shadow: var(--bevel-strong), var(--shadow-lg);
+  }
+  .flow-grid { display: grid; grid-template-columns: 220px 1fr 220px; gap: var(--s-8); align-items: center; }
+  .flow-col { display: flex; flex-direction: column; gap: var(--s-3); }
+  .flow-node {
+    background: var(--surface-2); border: 1px solid var(--surface-line);
+    border-radius: var(--r-3); padding: 14px 16px;
+    box-shadow: var(--bevel);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .flow-node .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-2); }
+  .flow-node .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-4); }
+  .flow-node.active .pip { background: var(--orange-500); box-shadow: 0 0 8px var(--orange-glow); }
+
+  .flow-center {
+    display: flex; flex-direction: column; align-items: center; gap: var(--s-4);
+    background: linear-gradient(180deg, color-mix(in oklch, var(--orange-500) 12%, var(--surface-2)), var(--surface-2));
+    border: 1px solid color-mix(in oklch, var(--orange-500) 35%, var(--surface-line));
+    border-radius: var(--r-4); padding: var(--s-8);
+    box-shadow: var(--bevel-strong), 0 24px 60px -20px var(--orange-glow);
+    text-align: center;
+  }
+  .flow-center .crown { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--orange-500); }
+  .flow-center .ttl { font-family: var(--font-display); font-size: 28px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink-1); }
+  .flow-center .sub { font-family: var(--font-display); font-size: 13.5px; line-height: 1.45; color: var(--ink-2); max-width: 28ch; }
+
+  /* ============= INTEGRATIONS ============= */
+  .integ-strip {
+    border: 1px solid var(--surface-line); border-radius: var(--r-4);
+    background: var(--surface-1); box-shadow: var(--bevel);
+    display: grid; grid-template-columns: repeat(5, 1fr);
+  }
+  .integ {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+    padding: var(--s-8) var(--s-6); border-right: 1px solid var(--surface-line);
+  }
+  .integ:last-child { border-right: 0; }
+  .integ .name { font-family: var(--font-display); font-size: 18px; font-weight: 500; color: var(--ink-1); }
+  .integ .role { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); }
+  .integ .swatch {
+    width: 28px; height: 28px; border-radius: 8px;
+    border: 1px solid var(--surface-line);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-1); font-family: var(--font-display); font-weight: 600; font-size: 13px;
+    box-shadow: var(--bevel);
+    margin-bottom: 6px;
+  }
+
+  /* ============= PROOF / RUN PREVIEW ============= */
+  .proof-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--s-12); align-items: stretch; }
+  .proof-copy { display: flex; flex-direction: column; gap: var(--s-5); justify-content: center; }
+  .proof-copy h3 { font-family: var(--font-display); font-size: clamp(28px, 3vw, 42px); line-height: 1.05; letter-spacing: -0.02em; font-weight: 500; color: var(--ink-1); margin: 0; max-width: 22ch; text-wrap: balance; }
+  .proof-copy p { font-family: var(--font-display); font-size: 16px; line-height: 1.55; color: var(--ink-2); max-width: 50ch; margin: 0; text-wrap: pretty; }
+
+  .run-card {
+    background: var(--surface-1); border: 1px solid var(--surface-line);
+    border-radius: var(--r-4); overflow: hidden;
+    box-shadow: var(--bevel-strong), var(--shadow-lg);
+    display: flex; flex-direction: column;
+  }
+  .run-card-head { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--surface-line); background: var(--surface-2); }
+  .run-card-head .id { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-mono); color: var(--ink-3); }
+  .run-card-head .id .hash { color: var(--ink-4); margin-right: 4px; }
+  .run-card-head .status { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--orange-500); display: flex; align-items: center; gap: 8px; }
+  .run-card-head .status .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--orange-500); box-shadow: 0 0 8px var(--orange-glow); }
+  .run-card-body { padding: var(--s-8); display: flex; flex-direction: column; gap: var(--s-5); }
+  .run-card-body .q { font-family: var(--font-display); font-size: 22px; line-height: 1.2; letter-spacing: -0.01em; color: var(--ink-1); font-weight: 500; }
+  .run-card-body .a { font-family: var(--font-display); font-size: 14px; line-height: 1.55; color: var(--ink-2); }
+  .run-card-body .a strong { color: var(--ink-1); font-weight: 600; }
+  .run-card-trail { display: flex; flex-direction: column; gap: 8px; padding-top: var(--s-4); border-top: 1px solid var(--surface-line-soft); }
+  .trail-row { display: grid; grid-template-columns: 16px 1fr auto; gap: 12px; align-items: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-mono); }
+  .trail-row .num { color: var(--ink-4); }
+  .trail-row .step { color: var(--ink-2); }
+  .trail-row .step b { color: var(--orange-500); font-weight: 500; }
+  .trail-row .ms { color: var(--ink-4); }
+
+  .run-card-foot { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--surface-line); background: var(--surface-2); }
+  .run-card-foot .open { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--orange-500); display: inline-flex; align-items: center; gap: 8px; }
+  .run-card-foot .meta { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); letter-spacing: var(--tracking-mono); }
+
+  /* ============= CTA ============= */
+  .cta-block {
+    border: 1px solid var(--surface-line); border-radius: var(--r-5);
+    background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+    padding: var(--s-16) var(--s-10);
+    box-shadow: var(--bevel-strong), var(--shadow-lg);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-block::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 50% 120%, var(--orange-glow), transparent 60%);
+  }
+  .cta-block h2 { font-family: var(--font-display); font-size: clamp(40px, 5.4vw, 80px); line-height: 0.98; letter-spacing: -0.035em; font-weight: 500; color: var(--ink-1); margin: 0 auto; max-width: 18ch; text-wrap: balance; position: relative; }
+  .cta-block .sub { font-family: var(--font-display); font-size: 17px; color: var(--ink-2); margin: var(--s-6) auto 0; max-width: 50ch; text-wrap: pretty; position: relative; }
+  .cta-block .row { display: inline-flex; gap: var(--s-3); margin-top: var(--s-8); position: relative; }
+
+  /* ============= FOOTER ============= */
+  .lp-foot { padding: var(--s-12) 0 var(--s-10); border-top: 1px solid var(--surface-line); margin-top: var(--s-12); }
+  .lp-foot-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-8); flex-wrap: wrap; }
+  .lp-foot-mono { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-mono); color: var(--ink-3); }
+  .lp-foot-nav { display: flex; gap: var(--s-6); align-items: center; }
+  .lp-foot-nav a { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); transition: color var(--dur-2); }
+  .lp-foot-nav a:hover { color: var(--orange-500); }
+
+  /* ============= RESPONSIVE ============= */
+  @media (max-width: 1100px) {
+    .hero-grid, .proof-grid { grid-template-columns: 1fr; gap: var(--s-8); }
+    .cap-grid { grid-template-columns: repeat(2, 1fr); }
+    .integ-strip { grid-template-columns: repeat(2, 1fr); }
+    .integ { border-right: 0; border-bottom: 1px solid var(--surface-line); }
+    .flow-grid { grid-template-columns: 1fr; }
+    .sec-head { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body screen="Landing — Kyn">
+
+<!-- ===================== TOPBAR ===================== -->
+<header class="lp-top" data-screen-label="Landing">
+  <div class="lp-top-inner">
+    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <nav class="lp-nav">
+      <a href="#capabilities">Capabilities</a>
+      <a href="#flow">How it works</a>
+      <a href="#integrations">Integrations</a>
+      <a href="/run">Live demo</a>
+    </nav>
+    <div style="display:flex; gap: var(--s-2); align-items:center;">
+      <a class="btn-cta-ghost" href="#" style="padding: 9px 16px; font-size: 13px;">Sign in</a>
+      <a class="btn-cta-primary" href="#cta" style="padding: 9px 16px; font-size: 13px;">Request access</a>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="hero-ambient" aria-hidden="true">kyn</div>
+  <div class="lp-shell hero-grid">
+    <div>
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        <span class="t-eyebrow" style="color: var(--ink-3);">KYN · AUTONOMOUS COMPANY BRAIN</span>
+      </div>
+      <h1>A company brain<br/>that <span class="accent">does</span> the work.</h1>
+      <p class="hero-sub">An autonomous engineer that lives inside your company's data — diagnoses incidents, ships fixes, and writes the customer back, in minutes.</p>
+      <div class="hero-ctas">
+        <a class="btn-cta-primary" href="#cta">Request access <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg></a>
+        <a class="btn-cta-ghost" href="/run">See a live run</a>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <span class="label">/ THE PITCH</span>
+      <p class="body">Kyn is a multi-agent system where a supervisor decides which capabilities to call — Code, Company, Memory, or Action — based on what each problem actually needs.</p>
+    </div>
+  </div>
+  <div class="lp-shell">
+    <div class="hero-stats">
+      <div class="cell"><span class="num">17s</span><span class="lbl">Median time-to-diagnosis</span></div>
+      <div class="cell"><span class="num">5</span><span class="lbl">Tools per supervised run</span></div>
+      <div class="cell"><span class="num">∞</span><span class="lbl">Memory across sessions</span></div>
+      <div class="cell"><span class="num">PR</span><span class="lbl">Real artifacts shipped</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="lp-shell"><div class="lp-rule"></div></div>
+
+<!-- ===================== CAPABILITIES ===================== -->
+<section class="sec" id="capabilities">
+  <div class="lp-shell">
+    <div class="sec-head">
+      <div class="sec-num">/ 01 — CAPABILITIES</div>
+      <h2 class="sec-title">Four sub-agents. One supervisor. Whatever the problem needs.</h2>
+    </div>
+
+    <div class="cap-grid">
+      <div class="cap feat">
+        <div class="glyph-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div class="tag">/ AGENT 01 · CODE</div>
+        <div class="name">Code</div>
+        <div class="desc">Reads and writes your repo. Traces commits, opens pull requests, runs scoped tests. Speaks GitHub natively.</div>
+      </div>
+
+      <div class="cap">
+        <div class="glyph-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4 8 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M9 17h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M14 17h1"/></svg>
+        </div>
+        <div class="tag">/ AGENT 02 · COMPANY</div>
+        <div class="name">Company</div>
+        <div class="desc">Synthesizes context across Slack, Gmail, Notion, contracts. Knows who owns what and what was decided last quarter.</div>
+      </div>
+
+      <div class="cap">
+        <div class="glyph-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.13-6.84"/><path d="M21 4v5h-5"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="tag">/ AGENT 03 · MEMORY</div>
+        <div class="name">Memory</div>
+        <div class="desc">Records what worked, what didn't, what the team decided. Recalls it on the next run, so you never explain twice.</div>
+      </div>
+
+      <div class="cap">
+        <div class="glyph-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 7h6l-3 13"/><path d="M7 12h2"/><path d="M15 12h2"/></svg>
+        </div>
+        <div class="tag">/ AGENT 04 · ACTION</div>
+        <div class="name">Action</div>
+        <div class="desc">Drafts the customer reply. Opens the PR. Files the incident. Real artifacts, ready to ship — with you in the loop.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FLOW ===================== -->
+<section class="sec" id="flow" style="padding-top: 0;">
+  <div class="lp-shell">
+    <div class="sec-head">
+      <div class="sec-num">/ 02 — HOW IT WORKS</div>
+      <h2 class="sec-title">A supervisor that routes, not a chatbot that guesses.</h2>
+    </div>
+
+    <div class="flow">
+      <div class="flow-grid">
+        <div class="flow-col">
+          <div class="flow-node active"><span class="pip"></span><span class="label">/ INPUT · PROBLEM</span></div>
+          <div class="flow-node"><span class="pip"></span><span class="label">/ INPUT · CONTEXT</span></div>
+          <div class="flow-node"><span class="pip"></span><span class="label">/ INPUT · PRIORS</span></div>
+        </div>
+
+        <div class="flow-center">
+          <span class="crown">/ SUPERVISOR</span>
+          <span class="ttl">Routes the run.</span>
+          <span class="sub">Decides which capability to call, in what order, and when the answer is good enough to ship.</span>
+        </div>
+
+        <div class="flow-col">
+          <div class="flow-node active"><span class="pip"></span><span class="label">/ OUT · DIAGNOSIS</span></div>
+          <div class="flow-node active"><span class="pip"></span><span class="label">/ OUT · PR / DRAFT</span></div>
+          <div class="flow-node"><span class="pip"></span><span class="label">/ OUT · MEMORY WRITE</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== INTEGRATIONS ===================== -->
+<section class="sec" id="integrations" style="padding-top: 0;">
+  <div class="lp-shell">
+    <div class="sec-head">
+      <div class="sec-num">/ 03 — INTEGRATIONS</div>
+      <h2 class="sec-title">Plugged into the surfaces your team already lives in.</h2>
+    </div>
+
+    <div class="integ-strip">
+      <div class="integ"><div class="swatch" style="background: #4A154B;">S</div><span class="name">Slack</span><span class="role">/ CONVERSATION CONTEXT</span></div>
+      <div class="integ"><div class="swatch" style="background: #C5221F;">G</div><span class="name">Gmail</span><span class="role">/ CUSTOMER THREADS</span></div>
+      <div class="integ"><div class="swatch" style="background: #0B0E13;">⌘</div><span class="name">GitHub</span><span class="role">/ CODE & PRs</span></div>
+      <div class="integ"><div class="swatch" style="background: #1F1F1F;">N</div><span class="name">Notion</span><span class="role">/ DECISIONS & DOCS</span></div>
+      <div class="integ"><div class="swatch" style="background: var(--orange-700);">§</div><span class="name">Contracts</span><span class="role">/ SOURCE OF TRUTH</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROOF ===================== -->
+<section class="sec" id="proof" style="padding-top: 0;">
+  <div class="lp-shell">
+    <div class="sec-head">
+      <div class="sec-num">/ 04 — A REAL RUN</div>
+      <h2 class="sec-title">Watch a supervisor diagnose a payments incident.</h2>
+    </div>
+
+    <div class="proof-grid">
+      <div class="proof-copy">
+        <h3>Real artifacts. Not summaries.</h3>
+        <p>Every run produces something you can ship — a diagnosis with sources, a PR against a real repo, a customer-ready draft. The reasoning trail is open and inspectable, so the team can audit any step.</p>
+        <p>And every run gets smarter — what the supervisor learned today is what it remembers tomorrow.</p>
+        <a class="btn-cta-ghost" href="/run" style="align-self: flex-start;">Open the example run <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg></a>
+      </div>
+
+      <a class="run-card" href="/run" style="text-decoration: none;">
+        <div class="run-card-head">
+          <span class="id"><span class="hash">#</span>17b170fa</span>
+          <span class="status"><span class="dot"></span>RESOLVED · 17S</span>
+        </div>
+        <div class="run-card-body">
+          <div class="q">Why are payments failing right now?</div>
+          <div class="a">Payments appear to be failing because <strong>LedgerVault is rate-limiting us with HTTP 429s, and our retry logic amplified the traffic</strong>, causing elevated settlement failures.</div>
+          <div class="run-card-trail">
+            <div class="trail-row"><span class="num">01</span><span class="step"><b>RECALL</b> · prior_incidents</span><span class="ms">2.1s</span></div>
+            <div class="trail-row"><span class="num">02</span><span class="step"><b>COMPANY</b> · slack:#payments-oncall</span><span class="ms">3.4s</span></div>
+            <div class="trail-row"><span class="num">03</span><span class="step"><b>CODE</b> · github:retry-policy.ts</span><span class="ms">5.8s</span></div>
+            <div class="trail-row"><span class="num">04</span><span class="step"><b>WRITE-BACK</b> · memory.update</span><span class="ms">0.9s</span></div>
+            <div class="trail-row"><span class="num">05</span><span class="step"><b>SYNTHESIZE</b> · supervisor</span><span class="ms">4.3s</span></div>
+          </div>
+        </div>
+        <div class="run-card-foot">
+          <span class="open">Open the full trail <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg></span>
+          <span class="meta">5 TOOLS · 2 FINDINGS · 1 PR</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA ===================== -->
+<section class="sec" id="cta" style="padding-top: 0;">
+  <div class="lp-shell">
+    <div class="cta-block">
+      <h2>Stop briefing. Start shipping.</h2>
+      <p class="sub">Kyn is in private beta with design partners. We're onboarding teams who want their incidents diagnosed, their customers replied to, and their PRs drafted — while they sleep.</p>
+      <div class="row">
+        <a class="btn-cta-primary" href="#">Request access <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg></a>
+        <a class="btn-cta-ghost" href="/run">Watch a run first</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="lp-foot">
+  <div class="lp-shell lp-foot-inner">
+    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <nav class="lp-foot-nav">
+      <a href="/">Home</a>
+      <a href="/run">Live demo</a>
+      <a href="/design-system">Design system</a>
+      <a href="#cta">Request access</a>
+    </nav>
+    <span class="lp-foot-mono">© 2025 KYN LABS</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>kyn — Run · Why are payments failing right now?</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="tokens.css" />
+
+<style>
+body { padding-bottom: 120px; }
+
+/* ============= TOPBAR ============= */
+.kyn-topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in oklch, var(--surface-0) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--surface-line);
+}
+.kyn-topbar-inner {
+  max-width: 1480px; margin: 0 auto;
+  padding: 12px var(--s-8);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-6);
+}
+.kyn-mark { display: inline-flex; align-items: center; gap: 10px; }
+.kyn-mark .glyph {
+  width: 22px; height: 22px;
+  background: var(--orange-500);
+  border-radius: 6px;
+  position: relative;
+  box-shadow: var(--bevel), 0 1px 0 rgba(0,0,0,0.4);
+}
+.kyn-mark .glyph::after {
+  content: ""; position: absolute; inset: 5px;
+  border: 1.5px solid #fff; border-radius: 2px;
+  border-right-color: transparent; border-bottom-color: transparent;
+  transform: rotate(45deg);
+}
+.kyn-mark .word {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 600; letter-spacing: -0.02em;
+}
+.crumbs {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: var(--tracking-mono); color: var(--ink-3);
+}
+.crumbs .sep { color: var(--ink-4); }
+.crumbs a { color: var(--ink-2); text-decoration: none; }
+.crumbs a:hover { color: var(--ink-1); }
+.crumbs .here { color: var(--ink-1); }
+
+/* Run-id copy chip — purpose-built, replaces a generic clipboard icon */
+.id-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px 6px 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  color: var(--ink-2);
+  font-family: var(--font-mono); font-size: 11.5px;
+  letter-spacing: var(--tracking-mono);
+  box-shadow: var(--bevel);
+  transition: color var(--dur-2), border-color var(--dur-2), background var(--dur-2);
+}
+.id-chip:hover { color: var(--ink-1); border-color: var(--orange-500); background: var(--surface-2); }
+.id-chip .hash { color: var(--ink-4); font-weight: 500; }
+.id-chip .id-mono { color: var(--ink-1); }
+.id-chip .i { width: 13px; height: 13px; color: var(--ink-3); margin-left: 2px; }
+.id-chip:hover .i { color: var(--orange-500); }
+
+/* ============= PAGE SHELL ============= */
+.run-page {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: var(--s-10) var(--s-8) var(--s-12);
+}
+
+/* ============= RUN HEADER ============= */
+.run-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: var(--s-8);
+  padding-bottom: var(--s-8);
+  border-bottom: 1px solid var(--surface-line);
+  margin-bottom: var(--s-10);
+}
+.run-head .eyebrows { display: flex; gap: var(--s-3); align-items: center; margin-bottom: var(--s-5); flex-wrap: wrap; }
+.run-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 2.4vw, 34px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+  color: var(--ink-1);
+  white-space: nowrap;
+}
+.run-head h1 .accent { color: var(--orange-500); }
+.run-head .meta {
+  display: flex; gap: var(--s-6);
+  align-items: end;
+}
+.run-head .meta .cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.run-head .meta .v { color: var(--ink-1); font-size: 14px; font-weight: 500; font-family: var(--font-mono); letter-spacing: var(--tracking-mono); }
+.run-head .actions { display: flex; gap: var(--s-2); margin-top: var(--s-5); }
+
+/* ============= GRID LAYOUT ============= */
+.run-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: var(--s-8);
+  align-items: start;
+}
+.run-main { min-width: 0; display: flex; flex-direction: column; gap: var(--s-8); }
+.run-side {
+  position: sticky; top: 80px;
+  display: flex; flex-direction: column; gap: var(--s-4);
+}
+
+/* ============= ANSWER CARD ============= */
+.answer-card {
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-4);
+  box-shadow: var(--bevel-strong), var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+}
+.answer-card::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 100% at 100% 0%, rgba(255,77,23,0.06), transparent 60%);
+  pointer-events: none;
+}
+.answer-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--s-4) var(--s-6);
+  border-bottom: 1px solid var(--surface-line);
+  background: linear-gradient(180deg, rgba(255,255,255,0.018), transparent);
+  position: relative;
+}
+.answer-body {
+  padding: var(--s-8) var(--s-8) var(--s-6);
+  position: relative;
+}
+.answer-lede {
+  font-family: var(--font-display);
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink-1);
+  font-weight: 500;
+  margin: 0 0 var(--s-6);
+  text-wrap: pretty;
+}
+.answer-lede strong {
+  color: var(--orange-500);
+  font-weight: 500;
+  background: linear-gradient(180deg, transparent 60%, rgba(255,77,23,0.12) 60%);
+  padding: 0 2px;
+}
+.answer-body p { margin: 0 0 var(--s-3); color: var(--ink-2); font-size: 15px; line-height: 1.6; }
+.answer-body p:last-of-type { margin-bottom: 0; }
+.answer-body code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 2px 6px;
+  background: var(--surface-3);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-1);
+  color: var(--ink-1);
+}
+.answer-body strong { color: var(--ink-1); font-weight: 600; }
+.answer-body em { color: var(--orange-500); font-style: normal; font-weight: 500; }
+
+.evidence {
+  display: flex; flex-direction: column;
+  gap: var(--s-2);
+  margin: var(--s-6) 0;
+  padding: var(--s-5);
+  background: var(--surface-0);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-3);
+  box-shadow: inset 0 1px 0 rgba(0,0,0,0.5);
+}
+.evidence-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--s-2);
+}
+.ev-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  gap: var(--s-3);
+  padding: 10px 4px;
+  border-bottom: 1px dashed var(--surface-line-soft);
+  align-items: baseline;
+}
+.ev-row:last-child { border-bottom: 0; }
+.ev-row .num { font-family: var(--font-mono); font-size: 11px; color: var(--ink-4); letter-spacing: var(--tracking-wide); }
+.ev-row .src {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-1);
+  letter-spacing: var(--tracking-mono);
+}
+.ev-row .src .path { color: var(--ink-3); }
+.ev-row .desc { color: var(--ink-2); font-size: 13.5px; line-height: 1.45; padding-top: 4px; }
+.ev-row .tag {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--ink-3); letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-1);
+  background: var(--surface-1);
+  white-space: nowrap;
+}
+
+.negative-block {
+  margin-top: var(--s-5);
+  padding: var(--s-4) var(--s-5);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-left: 2px solid var(--status-weak);
+  border-radius: var(--r-2);
+}
+.negative-block .lab {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+.negative-block p { margin: 0; color: var(--ink-2); font-size: 13.5px; line-height: 1.5; }
+.negative-block p code { font-size: 11.5px; }
+
+.mitigation {
+  margin-top: var(--s-5);
+  padding: var(--s-5);
+  background: linear-gradient(180deg, rgba(255,77,23,0.04), rgba(255,77,23,0.01));
+  border: 1px solid rgba(255,77,23,0.25);
+  border-radius: var(--r-3);
+  position: relative;
+}
+.mitigation::before {
+  content: "";
+  position: absolute; left: 0; top: 18px; bottom: 18px;
+  width: 2px;
+  background: var(--orange-500);
+  border-radius: 0 2px 2px 0;
+}
+.mitigation .lab {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--orange-500);
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.mitigation .lab::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--orange-500); box-shadow: 0 0 8px var(--orange-glow);
+}
+.mitigation p { margin: 0; color: var(--ink-1); font-size: 14px; line-height: 1.55; }
+
+.answer-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-6);
+  border-top: 1px solid var(--surface-line);
+  background: var(--surface-0);
+}
+.answer-foot .left { display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; }
+.answer-foot .right { display: flex; gap: var(--s-2); align-items: center; }
+
+/* ============= REASONING TRAIL ============= */
+.section-strip {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--s-4);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--surface-line);
+  margin-bottom: var(--s-6);
+}
+.section-strip h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+.trail { display: flex; flex-direction: column; gap: 0; }
+.trail-step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0;
+  position: relative;
+}
+.trail-step .gutter {
+  display: flex; flex-direction: column; align-items: center;
+  padding-top: 18px;
+  position: relative;
+}
+.trail-step .gutter::before {
+  content: ""; position: absolute;
+  left: 50%; top: 38px; bottom: -12px;
+  width: 1px;
+  background: var(--surface-line);
+  transform: translateX(-50%);
+}
+.trail-step:last-child .gutter::before { display: none; }
+.trail-step .gutter .node {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-line);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--ink-3);
+  box-shadow: var(--bevel);
+  position: relative;
+  z-index: 1;
+}
+.trail-step.tool .gutter .node { background: var(--surface-2); border-color: var(--surface-line); }
+.trail-step.result .gutter .node { background: var(--status-strong); border-color: transparent; color: #08090A; }
+.trail-step.message .gutter .node { background: var(--orange-500); border-color: transparent; color: #fff; }
+
+.trail-step .body {
+  padding: var(--s-4) 0 var(--s-5) var(--s-4);
+}
+.trail-step .head-row {
+  display: flex; align-items: center; gap: var(--s-3);
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.trail-step .arrow {
+  font-family: var(--font-mono); font-size: 13px;
+  color: var(--ink-3);
+}
+.trail-step .tool-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink-1);
+  letter-spacing: var(--tracking-mono);
+  font-weight: 500;
+}
+.trail-step .tool-name.tool { color: var(--orange-500); }
+.trail-step .tool-name.result { color: var(--status-strong); }
+.trail-step .agent-tag {
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--ink-3);
+}
+.trail-step .ts {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--ink-4); letter-spacing: var(--tracking-mono);
+  margin-left: auto;
+}
+
+.io-block {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-2);
+  padding: var(--s-3) var(--s-4);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  letter-spacing: var(--tracking-mono);
+  box-shadow: inset 0 1px 0 rgba(0,0,0,0.4);
+}
+.io-block .key { color: var(--ink-4); }
+.io-block .str { color: var(--ink-2); }
+.io-block .accent { color: var(--orange-500); }
+.io-block .ok { color: var(--status-strong); }
+
+.result-block {
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-3);
+  padding: var(--s-4);
+  box-shadow: var(--bevel);
+}
+.result-block .res-head {
+  display: flex; align-items: center; gap: var(--s-3);
+  margin-bottom: var(--s-3);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px dashed var(--surface-line-soft);
+}
+.result-block .res-count {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink-1);
+}
+.result-block .res-label {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-3); letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+.result-block ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.result-block li {
+  display: grid; grid-template-columns: 16px 1fr auto;
+  gap: 12px; align-items: baseline;
+  font-size: 13.5px; color: var(--ink-2); line-height: 1.45;
+}
+.result-block li .b {
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink-4);
+  letter-spacing: var(--tracking-wide);
+}
+.result-block li .src { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-4); letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+.result-block li strong { color: var(--ink-1); font-weight: 500; }
+
+.message-bubble {
+  background: linear-gradient(180deg, rgba(255,77,23,0.06), rgba(255,77,23,0.015));
+  border: 1px solid rgba(255,77,23,0.25);
+  border-radius: var(--r-3);
+  padding: var(--s-4) var(--s-5);
+  color: var(--ink-1);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.message-bubble strong { color: var(--orange-500); font-weight: 500; }
+
+/* ============= SIDE PANELS ============= */
+.side-panel {
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-3);
+  box-shadow: var(--bevel);
+  overflow: hidden;
+}
+.side-panel .ph {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px var(--s-4);
+  border-bottom: 1px solid var(--surface-line);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+}
+.side-panel .pb { padding: var(--s-4); }
+.side-panel .pb.tight { padding: 0; }
+
+.kpi-row {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+}
+.kpi-row .kpi {
+  padding: var(--s-4) var(--s-4);
+  border-right: 1px solid var(--surface-line);
+  border-bottom: 1px solid var(--surface-line);
+}
+.kpi-row .kpi:nth-child(2n) { border-right: 0; }
+.kpi-row .kpi:nth-last-child(-n+2) { border-bottom: 0; }
+.kpi-row .kpi .v {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  color: var(--ink-1);
+  line-height: 1;
+}
+.kpi-row .kpi .v .u { color: var(--ink-4); font-size: 13px; margin-left: 4px; font-family: var(--font-mono); letter-spacing: var(--tracking-mono); font-weight: 400; }
+.kpi-row .kpi .l {
+  font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--ink-3); letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.findings-list { display: flex; flex-direction: column; }
+.finding {
+  display: grid; grid-template-columns: 24px 1fr;
+  gap: var(--s-3);
+  padding: 12px var(--s-4);
+  border-bottom: 1px solid var(--surface-line-soft);
+  align-items: baseline;
+}
+.finding:last-child { border-bottom: 0; }
+.finding .ic {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-line);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--orange-500);
+  flex-shrink: 0;
+}
+.finding .name {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--ink-1); letter-spacing: var(--tracking-mono);
+  word-break: break-all;
+}
+.finding .meta {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--ink-4); letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.empty-state {
+  padding: var(--s-6) var(--s-4);
+  text-align: center;
+  color: var(--ink-4);
+}
+.empty-state .b {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--ink-3);
+}
+.empty-state .s { font-size: 12px; margin-top: 6px; color: var(--ink-4); }
+
+/* tiny activity stream */
+.mini-log {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+.mini-log .row { display: grid; grid-template-columns: 56px 1fr; gap: 10px; padding: 2px 0; }
+.mini-log .ts { color: var(--ink-4); }
+.mini-log .ok { color: var(--status-strong); }
+.mini-log .info { color: var(--ink-2); }
+.mini-log .tag { color: var(--orange-500); }
+.mini-log .dim { color: var(--ink-4); }
+
+/* sub-agent / orchestration block at top of main */
+.orchestrator {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-3);
+  box-shadow: var(--bevel);
+  margin-bottom: var(--s-6);
+}
+.orchestrator .av {
+  width: 36px; height: 36px;
+  border-radius: var(--r-2);
+  background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
+  border: 1px solid var(--surface-line);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--orange-500);
+  box-shadow: var(--bevel);
+}
+.orchestrator .nm { font-size: 14px; font-weight: 500; color: var(--ink-1); }
+.orchestrator .sb { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: var(--tracking-mono); margin-top: 2px; }
+
+/* ============= CHAT + ANSWER TOP ROW ============= */
+.chat-final-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--s-6);
+  margin-bottom: var(--s-10);
+  align-items: stretch;
+  height: min(640px, calc(100vh - 220px));
+  min-height: 480px;
+}
+.chat-final-row > * { min-width: 0; min-height: 0; }
+.chat-final-row .answer-card { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+.chat-final-row .answer-card .answer-body { flex: 1; overflow-y: auto; min-height: 0; }
+
+/* Chat panel */
+.chat-panel {
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-4);
+  box-shadow: var(--bevel-strong), var(--shadow-md);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+}
+.chat-panel::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 0% 0%, rgba(255,255,255,0.025), transparent 60%);
+  pointer-events: none;
+}
+.chat-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--s-4) var(--s-5);
+  border-bottom: 1px solid var(--surface-line);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  position: relative; z-index: 1;
+}
+.chat-head .agent-id { display: flex; align-items: center; gap: 12px; }
+.chat-head .av {
+  width: 32px; height: 32px;
+  background: var(--orange-500);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  box-shadow: var(--bevel), 0 4px 12px -4px var(--orange-glow);
+  position: relative;
+}
+.chat-head .av::after {
+  content: ""; position: absolute;
+  bottom: -2px; right: -2px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--status-strong);
+  border: 2px solid var(--surface-2);
+  box-shadow: 0 0 8px var(--status-strong);
+}
+.chat-head .nm { font-size: 14px; font-weight: 500; color: var(--ink-1); line-height: 1.2; }
+.chat-head .sb { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); margin-top: 3px; letter-spacing: var(--tracking-mono); }
+
+.chat-body {
+  flex: 1;
+  padding: var(--s-5);
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: var(--s-5);
+  background: var(--surface-1);
+  position: relative; z-index: 1;
+}
+
+.msg { display: flex; flex-direction: column; gap: 6px; max-width: 86%; }
+.msg .role {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+}
+.msg .role .ts { color: var(--ink-4); margin-left: auto; font-weight: 400; }
+.msg .bubble {
+  padding: 12px 14px;
+  border-radius: var(--r-3);
+  font-size: 14px; line-height: 1.55;
+  border: 1px solid;
+  text-wrap: pretty;
+}
+.msg .bubble code {
+  font-family: var(--font-mono); font-size: 12px;
+  padding: 2px 6px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 3px;
+  color: var(--ink-1);
+}
+.msg .bubble strong { font-weight: 500; }
+
+/* USER · white text */
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg.user .role { color: var(--ink-2); }
+.msg.user .bubble {
+  background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
+  border-color: var(--surface-line);
+  color: #FFFFFF;
+  box-shadow: var(--bevel);
+}
+
+/* AGENT QUESTION · orange */
+.msg.question .role { color: var(--orange-500); }
+.msg.question .role::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--orange-500); box-shadow: 0 0 8px var(--orange-glow);
+}
+.msg.question .bubble {
+  background: linear-gradient(180deg, rgba(255,77,23,0.07), rgba(255,77,23,0.015));
+  border-color: rgba(255,77,23,0.32);
+  color: var(--orange-500);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.45);
+}
+.msg.question .bubble strong { color: #FFB088; }
+
+/* AGENT SOLUTION · green */
+.msg.solution .role { color: var(--status-strong); }
+.msg.solution .role::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--status-strong);
+  box-shadow: 0 0 8px color-mix(in oklch, var(--status-strong) 60%, transparent);
+}
+.msg.solution .bubble {
+  background: color-mix(in oklch, var(--status-strong) 9%, var(--surface-1));
+  border-color: color-mix(in oklch, var(--status-strong) 38%, transparent);
+  color: color-mix(in oklch, var(--status-strong) 88%, var(--ink-1));
+  box-shadow: 0 1px 0 rgba(0,0,0,0.45);
+}
+.msg.solution .bubble strong { color: var(--status-strong); }
+.msg.solution .bubble a {
+  color: var(--status-strong);
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding-top: 4px;
+}
+
+/* typing indicator inside a solution bubble (streaming) */
+.typing { display: inline-flex; align-items: center; gap: 5px; vertical-align: middle; margin-left: 4px; }
+.typing span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; opacity: 0.4;
+  animation: tdot 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.18s; }
+.typing span:nth-child(3) { animation-delay: 0.36s; }
+@keyframes tdot { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-2px); } }
+
+/* tool whisper between bubbles */
+.tool-whisper {
+  align-self: center;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 12px;
+  border: 1px dashed var(--surface-line);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: var(--tracking-wide); text-transform: uppercase;
+  color: var(--ink-3);
+  background: var(--surface-0);
+}
+.tool-whisper .ic { color: var(--orange-500); }
+.tool-whisper strong { color: var(--ink-2); font-weight: 500; }
+
+/* Chat actions row — sits above input */
+.chat-actions {
+  display: flex; gap: var(--s-2);
+  padding: var(--s-3) var(--s-5) var(--s-3);
+  border-top: 1px solid var(--surface-line-soft);
+  background: var(--surface-1);
+  position: relative; z-index: 1;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Chat input */
+.chat-input {
+  display: flex; gap: 10px;
+  padding: var(--s-4) var(--s-5);
+  border-top: 1px solid var(--surface-line);
+  background: var(--surface-0);
+  align-items: center;
+  position: relative; z-index: 1;
+}
+.chat-input .field {
+  flex: 1;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-line);
+  border-radius: var(--r-pill);
+  padding: 11px 18px;
+  color: var(--ink-1);
+  font-family: var(--font-body); font-size: 13.5px;
+  outline: none;
+  box-shadow: var(--bevel);
+  transition: border-color var(--dur-2), box-shadow var(--dur-2);
+}
+.chat-input .field::placeholder { color: var(--ink-4); }
+.chat-input .field:focus {
+  border-color: var(--orange-500);
+  box-shadow: var(--bevel), 0 0 0 3px rgba(255,77,23,0.18);
+}
+.chat-input .send {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--orange-500);
+  border: 0; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--bevel), 0 6px 18px -6px var(--orange-glow);
+  transition: transform var(--dur-1) var(--ease-out), background var(--dur-2);
+}
+.chat-input .send:hover { background: var(--orange-600); }
+.chat-input .send:active { transform: translateY(1px); }
+.chat-input .send svg, .chat-input .send .i { width: 15px; height: 15px; }
+.chat-input .btn-icon svg, .chat-input .btn-icon .i { width: 15px; height: 15px; }
+
+@media (max-width: 1100px) {
+  .run-grid { grid-template-columns: 1fr; }
+  .run-side { position: static; }
+  .run-head { grid-template-columns: 1fr; }
+  .run-head .meta { flex-wrap: wrap; }
+  .chat-final-row { grid-template-columns: 1fr; height: auto; }
+  .chat-panel { min-height: 480px; height: auto; }
+  .chat-final-row .answer-card { height: auto; }
+  .chat-final-row .answer-card .answer-body { overflow: visible; }
+}
+</style>
+</head>
+<body data-screen-label="Run · Why are payments failing right now?">
+
+<!-- ===================== TOPBAR ===================== -->
+<header class="kyn-topbar">
+  <div class="kyn-topbar-inner">
+    <a class="kyn-mark" href="/" style="text-decoration: none; color: inherit;">
+      <span class="glyph"></span>
+      <span class="word">kyn</span>
+    </a>
+
+    <div class="crumbs">
+      <a href="#">RUNS</a>
+      <span class="sep">/</span>
+      <span class="here">17B170FA</span>
+    </div>
+
+    <div class="kyn-row" style="gap: var(--s-2);">
+      <button class="id-chip" aria-label="copy run id" title="Copy run id">
+        <span class="hash">#</span>
+        <span class="id-mono">17b170fa</span>
+        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h9a2 2 0 0 1 2 2v11"/><rect x="4" y="8" width="12" height="12" rx="2.5"/></svg>
+      </button>
+      <button class="btn-icon" aria-label="share" title="Share">
+        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      </button>
+      <button class="btn btn-ghost btn-sm">Replay</button>
+      <button class="btn btn-primary btn-sm">New run →</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== PAGE ===================== -->
+<main class="run-page">
+
+  <!-- ===== HEAD ===== -->
+  <header class="run-head">
+    <div>
+      <div class="eyebrows">
+        <span class="t-eyebrow">PROBLEM · 17B170FA-41B7-4F9E-BFD1-B32D5BBC7831</span>
+        <span class="badge badge-strong">RESOLVED</span>
+        <span class="t-eyebrow" style="color: var(--ink-3)">SUPERVISOR · SOLO</span>
+      </div>
+      <h1>Why are payments failing right <span class="accent">now?</span></h1>
+    </div>
+    <div class="meta">
+      <div class="cell"><span class="t-eyebrow">DURATION</span><span class="v">11.42<span style="color:var(--ink-4)">s</span></span></div>
+      <div class="cell"><span class="t-eyebrow">TOOLS</span><span class="v">3</span></div>
+      <div class="cell"><span class="t-eyebrow">FINDINGS</span><span class="v">2</span></div>
+      <div class="cell"><span class="t-eyebrow">ARTIFACTS</span><span class="v" style="color:var(--ink-3)">0</span></div>
+      <div class="cell"><span class="t-eyebrow">STARTED</span><span class="v">14:22:08</span></div>
+    </div>
+  </header>
+
+  <!-- ===== CHAT + ANSWER TOP ROW ===== -->
+  <div class="chat-final-row">
+
+    <!-- CHAT -->
+    <section class="chat-panel" data-screen-label="Chat">
+      <div class="chat-head">
+        <div class="agent-id">
+          <div class="av">
+            <svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="nm">Supervisor</div>
+            <div class="sb">model.geist-3 · ONLINE</div>
+          </div>
+        </div>
+        <div class="kyn-row" style="gap: var(--s-2);">
+          <span class="badge badge-dot badge-strong">RESOLVED</span>
+          <button class="btn-icon" title="clear thread" style="width:30px;height:30px;">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-body">
+        <div class="msg user">
+          <div class="role">YOU<span class="ts">14:22</span></div>
+          <div class="bubble">Why are payments failing right now?</div>
+        </div>
+
+        <div class="msg question">
+          <div class="role">SUPERVISOR · CLARIFY<span class="ts">14:22</span></div>
+          <div class="bubble">Quick clarification — should I scope this to the <strong>last 24h</strong>, or scan further back? And do you want me to include vendor-side signals (LedgerVault, PayLane), or just internal logs &amp; Slack?</div>
+        </div>
+
+        <div class="msg user">
+          <div class="role">YOU<span class="ts">14:22</span></div>
+          <div class="bubble">Last 24h. Include both — internal and vendor.</div>
+        </div>
+
+        <div class="tool-whisper">
+          <span class="ic">●</span> <strong>get_company_context</strong> · 9 + 19 results · 2.8s
+        </div>
+
+        <div class="msg question">
+          <div class="role">SUPERVISOR · CONFIRM<span class="ts">14:24</span></div>
+          <div class="bubble">I'm seeing strong signal pointing to a <strong>LedgerVault 429 + retry amplification</strong> incident pattern (9 procedural + 19 doc hits in the last 24h). Want me to write this back to memory and synthesize a structured answer?</div>
+        </div>
+
+        <div class="msg user">
+          <div class="role">YOU<span class="ts">14:25</span></div>
+          <div class="bubble">Yes — synthesize and surface immediate mitigations.</div>
+        </div>
+
+        <div class="tool-whisper">
+          <span class="ic">●</span> <strong>record_or_recall_memory</strong> · WRITE-BACK · 2 records
+        </div>
+
+        <div class="msg solution">
+          <div class="role">SUPERVISOR · SOLUTION<span class="ts">14:33</span></div>
+          <div class="bubble">
+            Payments are failing because <strong>LedgerVault is rate-limiting us with HTTP 429s</strong>, and our retry logic amplified the traffic — driving elevated settlement failures.<br/><br/>
+            Immediate mitigation: keep <code>payments.ledgervault.retry_v2</code> disabled, confirm router failover to <strong>PayLane</strong>, and check LedgerVault's per-key 429 panel — not the public status page.<br/>
+            <a href="#">Full output, evidence &amp; sources →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-actions">
+        <button class="btn btn-quiet btn-sm">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Replay
+        </button>
+        <button class="btn btn-quiet btn-sm">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export trace
+        </button>
+        <button class="btn btn-ghost btn-sm">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Ask follow-up
+        </button>
+      </div>
+
+      <form class="chat-input" onsubmit="event.preventDefault();">
+        <input class="field" placeholder="Ask a follow-up — e.g. 'how long has this been happening?'" />
+        <button type="button" class="btn-icon" title="attach" style="background: var(--surface-2); border: 1px solid var(--surface-line);">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <button type="submit" class="send" title="send">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+    </section>
+
+    <!-- ANSWER -->
+    <section class="answer-card" data-screen-label="Answer">
+        <div class="answer-head">
+          <span class="t-eyebrow t-eyebrow-orange">● FINAL OUTPUT</span>
+          <div class="kyn-row" style="gap: var(--s-2);">
+            <span class="t-mono-sm" style="color:var(--ink-3)">SYNTHESIZED · SUPERVISOR</span>
+            <span class="badge badge-strong">CONFIDENT</span>
+          </div>
+        </div>
+
+        <div class="answer-body">
+          <p class="answer-lede">
+            Payments are failing because <strong>LedgerVault is rate-limiting us with HTTP 429s</strong>, and our retry logic amplified the traffic — driving elevated settlement failures.
+          </p>
+
+          <div class="evidence">
+            <div class="evidence-head">
+              <span class="t-eyebrow">EVIDENCE · 5 SOURCES</span>
+              <span class="t-mono-sm" style="color:var(--ink-3)">SAME KNOWN INCIDENT PATTERN</span>
+            </div>
+
+            <div class="ev-row">
+              <span class="num">01</span>
+              <div>
+                <div class="src">"Procedure: handle LedgerVault 429 spikes"</div>
+                <div class="desc">Mitigation is to disable <code>payments.ledgervault.retry_v2</code> and verify failover to PayLane when 429s exceed threshold.</div>
+              </div>
+              <span class="tag">PROCEDURE</span>
+            </div>
+
+            <div class="ev-row">
+              <span class="num">02</span>
+              <div>
+                <div class="src"><span class="path">docs/</span>incident-runbook.md</div>
+                <div class="desc">Confirms LedgerVault 429/5xx spikes trigger payment incident handling — vendor public status may still look green.</div>
+              </div>
+              <span class="tag">RUNBOOK</span>
+            </div>
+
+            <div class="ev-row">
+              <span class="num">03</span>
+              <div>
+                <div class="src">"Payment failures — LedgerVault 429 + retry amplification"</div>
+                <div class="desc">Describes the observed failure mode: high LedgerVault 429s, retry amplification, ~30% settlement failures.</div>
+              </div>
+              <span class="tag">POSTMORTEM</span>
+            </div>
+
+            <div class="ev-row">
+              <span class="num">04</span>
+              <div>
+                <div class="src"><span class="path">slack #</span>payments-eng</div>
+                <div class="desc">Notes the retry kill switch remains off — retries disabled until a per-key fix ships.</div>
+              </div>
+              <span class="tag">SLACK</span>
+            </div>
+
+            <div class="ev-row">
+              <span class="num">05</span>
+              <div>
+                <div class="src">BigCo settlement failures · <span class="path">SUP-2089</span></div>
+                <div class="desc">Confirms customer-facing settlement failures in the affected window.</div>
+              </div>
+              <span class="tag">TICKET</span>
+            </div>
+          </div>
+
+          <div class="negative-block">
+            <div class="lab">RULED OUT</div>
+            <p>No evidence this is currently due to <strong>Stripe</strong>, <strong>Adyen</strong>, <strong>Braintree</strong>, webhooks, payment intents, or a generic processor outage.</p>
+          </div>
+
+          <div class="mitigation">
+            <div class="lab">IMMEDIATE MITIGATION</div>
+            <p>Keep <code>payments.ledgervault.retry_v2</code> disabled, confirm router failover to <strong style="color:var(--orange-500)">PayLane</strong>, and check LedgerVault's <strong style="color:var(--ink-1)">per-key 429 panel</strong> — not just their public status page.</p>
+          </div>
+        </div>
+
+        <div class="answer-foot">
+          <div class="left">
+            <span class="t-eyebrow">FEEDBACK</span>
+            <button class="btn-icon" title="helpful" style="width:30px; height:30px;">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            </button>
+            <button class="btn-icon" title="not helpful" style="width:30px; height:30px;">
+              <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transform: rotate(180deg)"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+            </button>
+          </div>
+          <div class="right">
+            <button class="btn btn-quiet btn-sm">Open incident</button>
+            <button class="btn btn-primary btn-sm">Page on-call →</button>
+          </div>
+        </div>
+      </section>
+
+  </div>
+
+  <!-- ===== GRID ===== -->
+  <div class="run-grid">
+
+    <!-- ===== MAIN COLUMN ===== -->
+    <div class="run-main">
+
+      <!-- REASONING TRAIL -->
+      <section data-screen-label="Reasoning trail">
+        <div class="section-strip">
+          <div>
+            <h2>Reasoning trail</h2>
+            <div class="t-mono-sm" style="color: var(--ink-3); margin-top: 6px;">3 TOOL CALLS · 2 RESULTS · 1 FINAL MESSAGE</div>
+          </div>
+          <div class="kyn-row" style="gap: var(--s-2);">
+            <button class="btn btn-quiet btn-sm">All</button>
+            <button class="btn btn-ghost btn-sm">Tool calls</button>
+            <button class="btn btn-ghost btn-sm">Results</button>
+          </div>
+        </div>
+
+        <div class="orchestrator">
+          <div class="av">
+            <svg class="i" style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="nm">Supervisor</div>
+            <div class="sb">model.geist-3 · planning · coordinating · synthesizing</div>
+          </div>
+          <span class="badge badge-strong">DONE</span>
+        </div>
+
+        <div class="trail">
+
+          <!-- STEP 1: tool.call record_or_recall_memory RECALL -->
+          <div class="trail-step tool">
+            <div class="gutter"><div class="node">→</div></div>
+            <div class="body">
+              <div class="head-row">
+                <span class="arrow">→</span>
+                <span class="tool-name tool">record_or_recall_memory</span>
+                <span class="agent-tag">·  RECALL</span>
+                <span class="ts">+0.04s</span>
+              </div>
+              <div class="io-block">
+                <span class="key">input:</span> <span class="accent">"RECALL:</span> search for similar past/current incidents involving payment failures, checkout errors, settlement issues, LedgerVault, retry storms, processor 429s..."
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: tool.call get_company_context -->
+          <div class="trail-step tool">
+            <div class="gutter"><div class="node">→</div></div>
+            <div class="body">
+              <div class="head-row">
+                <span class="arrow">→</span>
+                <span class="tool-name tool">get_company_context</span>
+                <span class="agent-tag">·  HYPERSPELL</span>
+                <span class="ts">+0.31s</span>
+              </div>
+              <div class="io-block">
+                <span class="key">input:</span> <span class="accent">"</span>Find current/recent context on payments failing right now: Slack incident threads, alerts, runbooks, postmortems, vendor status, settlement failures..."
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2a: tool.result A -->
+          <div class="trail-step result">
+            <div class="gutter"><div class="node">✓</div></div>
+            <div class="body">
+              <div class="head-row">
+                <span class="arrow">←</span>
+                <span class="tool-name result">get_company_context</span>
+                <span class="agent-tag">·  RESPONSE A</span>
+                <span class="ts">+1.68s</span>
+              </div>
+              <div class="result-block">
+                <div class="res-head">
+                  <span class="res-count">9</span>
+                  <span class="res-label">RELEVANT ITEMS · KEY POINTS &amp; DIAGNOSTIC STEPS</span>
+                </div>
+                <ul>
+                  <li><span class="b">·</span><span><strong>Procedure:</strong> handle LedgerVault 429 spikes</span><span class="src">PROCEDURAL</span></li>
+                  <li><span class="b">·</span><span><strong>Diagnostic / thresholds:</strong> check vendor 429 panel and per-key traffic (vendor cap e.g. 5…)</span><span class="src">DIAGNOSTIC</span></li>
+                  <li><span class="b">·</span><span><strong>Mitigation:</strong> disable <code style="font-family:var(--font-mono); font-size:11.5px; padding:1px 5px; background:var(--surface-3); border:1px solid var(--surface-line); border-radius:3px; color:var(--ink-1)">payments.ledgervault.retry_v2</code></span><span class="src">CONFIG</span></li>
+                  <li><span class="b">·</span><span><strong>Failover:</strong> verify router → PayLane</span><span class="src">RUNBOOK</span></li>
+                  <li><span class="b">·</span><span style="color: var(--ink-3)">…and 5 more</span><span class="src">+5</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2b: tool.result B -->
+          <div class="trail-step result">
+            <div class="gutter"><div class="node">✓</div></div>
+            <div class="body">
+              <div class="head-row">
+                <span class="arrow">←</span>
+                <span class="tool-name result">get_company_context</span>
+                <span class="agent-tag">·  RESPONSE B</span>
+                <span class="ts">+3.12s</span>
+              </div>
+              <div class="result-block">
+                <div class="res-head">
+                  <span class="res-count">19</span>
+                  <span class="res-label">MATCHING DOCS · LAST 24H · RANKED BY SCORE</span>
+                </div>
+                <ul>
+                  <li><span class="b">01</span><span><strong>Payment failures — LedgerVault 429 rate-limit + retry amplification</strong></span><span class="src">0.94</span></li>
+                  <li><span class="b">02</span><span><strong>incident-runbook.md</strong> — payment incident handling</span><span class="src">0.91</span></li>
+                  <li><span class="b">03</span><span><strong>#payments-eng</strong> — retry kill switch off</span><span class="src">0.88</span></li>
+                  <li><span class="b">04</span><span><strong>SUP-2089</strong> — BigCo settlement failures</span><span class="src">0.82</span></li>
+                  <li><span class="b">05</span><span><strong>vendor-status notes</strong> — public page green, per-key 429s spiking</span><span class="src">0.79</span></li>
+                  <li><span class="b">·</span><span style="color: var(--ink-3)">…and 14 more</span><span class="src">+14</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: tool.call write-back -->
+          <div class="trail-step tool">
+            <div class="gutter"><div class="node">→</div></div>
+            <div class="body">
+              <div class="head-row">
+                <span class="arrow">→</span>
+                <span class="tool-name tool">record_or_recall_memory</span>
+                <span class="agent-tag">·  WRITE-BACK</span>
+                <span class="ts">+8.04s</span>
+              </div>
+              <div class="io-block">
+                <span class="key">input:</span> <span class="accent">"WRITE-BACK:</span> User asked why payments are failing right now. Context found indicates current LedgerVault 429 + retry amplification…"
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3a: result -->
+          <div class="trail-step result">
+            <div class="gutter"><div class="node">✓</div></div>
+            <div class="body">
+              <div class="head-row">
+                <span class="arrow">←</span>
+                <span class="tool-name result">record_or_recall_memory</span>
+                <span class="ts">+8.21s</span>
+              </div>
+              <div class="io-block">
+                <span class="ok">✓</span> Done — wrote <span style="color:var(--ink-1)">episodic</span> and <span style="color:var(--ink-1)">procedural</span> memories about LedgerVault 429 + retry-amplification payment failures.
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: final synthesized message -->
+          <div class="trail-step message">
+            <div class="gutter"><div class="node">💬</div></div>
+            <div class="body">
+              <div class="head-row">
+                <span class="arrow">💬</span>
+                <span class="tool-name" style="color: var(--orange-500);">Supervisor · final synthesis</span>
+                <span class="ts">+11.42s</span>
+              </div>
+              <div class="message-bubble">
+                Payments appear to be failing because <strong>LedgerVault is rate-limiting us with HTTP 429s, and our retry logic amplified the traffic</strong>, causing elevated settlement failures. Evidence points to the same known/current incident pattern…
+                <div class="kyn-row" style="margin-top: 12px; gap: 8px;">
+                  <span class="badge-label" style="margin: 0;">SCROLL UP TO</span>
+                  <a href="#" style="color: var(--orange-500); font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; text-decoration: none;">FULL OUTPUT ↑</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ===== SIDE COLUMN ===== -->
+    <aside class="run-side" data-screen-label="Run summary">
+
+      <!-- KPIs -->
+      <section class="side-panel">
+        <div class="ph">
+          <span class="t-eyebrow">RUN SUMMARY</span>
+          <span class="t-mono-sm" style="color: var(--ink-3)">v0.4.2</span>
+        </div>
+        <div class="pb tight">
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="v">11.42<span class="u">s</span></div>
+              <div class="l">DURATION</div>
+            </div>
+            <div class="kpi">
+              <div class="v">3</div>
+              <div class="l">TOOLS CALLED</div>
+            </div>
+            <div class="kpi">
+              <div class="v">28</div>
+              <div class="l">SOURCES SCANNED</div>
+            </div>
+            <div class="kpi">
+              <div class="v">2.4<span class="u">k</span></div>
+              <div class="l">TOKENS</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Findings -->
+      <section class="side-panel">
+        <div class="ph">
+          <span class="t-eyebrow">FINDINGS RECORDED</span>
+          <span class="badge badge-strong" style="font-size: 9.5px;">2</span>
+        </div>
+        <div class="pb tight">
+          <div class="findings-list">
+            <div class="finding">
+              <div class="ic">
+                <svg class="i" style="width: 11px; height: 11px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              </div>
+              <div>
+                <div class="name">company_memory_search</div>
+                <div class="meta">EPISODIC · INCIDENT · 24H</div>
+              </div>
+            </div>
+            <div class="finding">
+              <div class="ic">
+                <svg class="i" style="width: 11px; height: 11px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              </div>
+              <div>
+                <div class="name">company_memory_search</div>
+                <div class="meta">PROCEDURAL · LEDGERVAULT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Artifacts -->
+      <section class="side-panel">
+        <div class="ph">
+          <span class="t-eyebrow">ARTIFACTS SHIPPED</span>
+          <span class="t-mono-sm" style="color: var(--ink-3)">0</span>
+        </div>
+        <div class="pb">
+          <div class="empty-state">
+            <div class="b">— NONE THIS RUN —</div>
+            <div class="s">No documents, briefs or PRs were shipped. Diagnostic-only.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Activity log -->
+      <section class="side-panel">
+        <div class="ph">
+          <span class="t-eyebrow">ACTIVITY</span>
+          <span class="t-mono-sm" style="color: var(--ink-3)">8 EVENTS</span>
+        </div>
+        <div class="pb">
+          <div class="mini-log">
+            <div class="row"><span class="ts">14:22.08</span><span><span class="info">run.start</span> <span class="dim">supervisor</span></span></div>
+            <div class="row"><span class="ts">14:22.12</span><span><span class="tag">memory.recall</span> <span class="dim">RECALL</span></span></div>
+            <div class="row"><span class="ts">14:22.39</span><span><span class="tag">context.fetch</span> <span class="dim">hyperspell</span></span></div>
+            <div class="row"><span class="ts">14:23.76</span><span><span class="ok">context.ok</span> <span class="dim">9 items</span></span></div>
+            <div class="row"><span class="ts">14:25.20</span><span><span class="ok">context.ok</span> <span class="dim">19 docs · 24h</span></span></div>
+            <div class="row"><span class="ts">14:30.12</span><span><span class="tag">memory.write</span> <span class="dim">episodic + procedural</span></span></div>
+            <div class="row"><span class="ts">14:30.29</span><span><span class="ok">memory.ok</span> <span class="dim">2 records</span></span></div>
+            <div class="row"><span class="ts">14:33.50</span><span><span class="ok">run.end</span> <span class="dim">11.42s · ■ stream closed</span></span></div>
+          </div>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+</main>
+
+</body>
+</html>
