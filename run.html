@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>kyn — Run · Why are payments failing right now?</title>
+<title>kyn - Run · Why are payments failing right now?</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -56,7 +56,7 @@ body { padding-bottom: 120px; }
 .crumbs a:hover { color: var(--ink-1); }
 .crumbs .here { color: var(--ink-1); }
 
-/* Run-id copy chip — purpose-built, replaces a generic clipboard icon */
+/* Run-id copy chip - purpose-built, replaces a generic clipboard icon */
 .id-chip {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 10px 6px 12px;
@@ -721,7 +721,7 @@ body { padding-bottom: 120px; }
 .tool-whisper .ic { color: var(--orange-500); }
 .tool-whisper strong { color: var(--ink-2); font-weight: 500; }
 
-/* Chat actions row — sits above input */
+/* Chat actions row - sits above input */
 .chat-actions {
   display: flex; gap: var(--s-2);
   padding: var(--s-3) var(--s-5) var(--s-3);
@@ -787,7 +787,7 @@ body { padding-bottom: 120px; }
 @media (max-width: 760px) {
   body { padding-bottom: 60px; }
 
-  /* topbar — collapse to mark + primary action */
+  /* topbar - collapse to mark + primary action */
   .kyn-topbar-inner { padding: 10px var(--s-4); gap: 10px; flex-wrap: wrap; }
   .crumbs { display: none; }
   .kyn-topbar-inner > .kyn-row { gap: 6px; }
@@ -967,12 +967,12 @@ body { padding-bottom: 120px; }
 
         <div class="msg question">
           <div class="role">SUPERVISOR · CLARIFY<span class="ts">14:22</span></div>
-          <div class="bubble">Quick clarification — should I scope this to the <strong>last 24h</strong>, or scan further back? And do you want me to include vendor-side signals (LedgerVault, PayLane), or just internal logs &amp; Slack?</div>
+          <div class="bubble">Quick clarification: should I scope this to the <strong>last 24h</strong>, or scan further back? And do you want me to include vendor-side signals (LedgerVault, PayLane), or just internal logs &amp; Slack?</div>
         </div>
 
         <div class="msg user">
           <div class="role">YOU<span class="ts">14:22</span></div>
-          <div class="bubble">Last 24h. Include both — internal and vendor.</div>
+          <div class="bubble">Last 24h. Include both: internal and vendor.</div>
         </div>
 
         <div class="tool-whisper">
@@ -986,7 +986,7 @@ body { padding-bottom: 120px; }
 
         <div class="msg user">
           <div class="role">YOU<span class="ts">14:25</span></div>
-          <div class="bubble">Yes — synthesize and surface immediate mitigations.</div>
+          <div class="bubble">Yes, synthesize and surface immediate mitigations.</div>
         </div>
 
         <div class="tool-whisper">
@@ -996,8 +996,8 @@ body { padding-bottom: 120px; }
         <div class="msg solution">
           <div class="role">SUPERVISOR · SOLUTION<span class="ts">14:33</span></div>
           <div class="bubble">
-            Payments are failing because <strong>LedgerVault is rate-limiting us with HTTP 429s</strong>, and our retry logic amplified the traffic — driving elevated settlement failures.<br/><br/>
-            Immediate mitigation: keep <code>payments.ledgervault.retry_v2</code> disabled, confirm router failover to <strong>PayLane</strong>, and check LedgerVault's per-key 429 panel — not the public status page.<br/>
+            Payments are failing because <strong>LedgerVault is rate-limiting us with HTTP 429s</strong>, and our retry logic amplified the traffic, driving elevated settlement failures.<br/><br/>
+            Immediate mitigation: keep <code>payments.ledgervault.retry_v2</code> disabled, confirm router failover to <strong>PayLane</strong>, and check LedgerVault's per-key 429 panel, not the public status page.<br/>
             <a href="#">Full output, evidence &amp; sources →</a>
           </div>
         </div>
@@ -1019,7 +1019,7 @@ body { padding-bottom: 120px; }
       </div>
 
       <form class="chat-input" onsubmit="event.preventDefault();">
-        <input class="field" placeholder="Ask a follow-up — e.g. 'how long has this been happening?'" />
+        <input class="field" placeholder="Ask a follow-up, e.g. 'how long has this been happening?'" />
         <button type="button" class="btn-icon" title="attach" style="background: var(--surface-2); border: 1px solid var(--surface-line);">
           <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
         </button>
@@ -1041,7 +1041,7 @@ body { padding-bottom: 120px; }
 
         <div class="answer-body">
           <p class="answer-lede">
-            Payments are failing because <strong>LedgerVault is rate-limiting us with HTTP 429s</strong>, and our retry logic amplified the traffic — driving elevated settlement failures.
+            Payments are failing because <strong>LedgerVault is rate-limiting us with HTTP 429s</strong>, and our retry logic amplified the traffic, driving elevated settlement failures.
           </p>
 
           <div class="evidence">
@@ -1063,7 +1063,7 @@ body { padding-bottom: 120px; }
               <span class="num">02</span>
               <div>
                 <div class="src"><span class="path">docs/</span>incident-runbook.md</div>
-                <div class="desc">Confirms LedgerVault 429/5xx spikes trigger payment incident handling — vendor public status may still look green.</div>
+                <div class="desc">Confirms LedgerVault 429/5xx spikes trigger payment incident handling; vendor public status may still look green.</div>
               </div>
               <span class="tag">RUNBOOK</span>
             </div>
@@ -1071,7 +1071,7 @@ body { padding-bottom: 120px; }
             <div class="ev-row">
               <span class="num">03</span>
               <div>
-                <div class="src">"Payment failures — LedgerVault 429 + retry amplification"</div>
+                <div class="src">"Payment failures - LedgerVault 429 + retry amplification"</div>
                 <div class="desc">Describes the observed failure mode: high LedgerVault 429s, retry amplification, ~30% settlement failures.</div>
               </div>
               <span class="tag">POSTMORTEM</span>
@@ -1081,7 +1081,7 @@ body { padding-bottom: 120px; }
               <span class="num">04</span>
               <div>
                 <div class="src"><span class="path">slack #</span>payments-eng</div>
-                <div class="desc">Notes the retry kill switch remains off — retries disabled until a per-key fix ships.</div>
+                <div class="desc">Notes the retry kill switch remains off; retries disabled until a per-key fix ships.</div>
               </div>
               <span class="tag">SLACK</span>
             </div>
@@ -1103,7 +1103,7 @@ body { padding-bottom: 120px; }
 
           <div class="mitigation">
             <div class="lab">IMMEDIATE MITIGATION</div>
-            <p>Keep <code>payments.ledgervault.retry_v2</code> disabled, confirm router failover to <strong style="color:var(--orange-500)">PayLane</strong>, and check LedgerVault's <strong style="color:var(--ink-1)">per-key 429 panel</strong> — not just their public status page.</p>
+            <p>Keep <code>payments.ledgervault.retry_v2</code> disabled, confirm router failover to <strong style="color:var(--orange-500)">PayLane</strong>, and check LedgerVault's <strong style="color:var(--ink-1)">per-key 429 panel</strong>, not just their public status page.</p>
           </div>
         </div>
 
@@ -1233,11 +1233,11 @@ body { padding-bottom: 120px; }
                   <span class="res-label">MATCHING DOCS · LAST 24H · RANKED BY SCORE</span>
                 </div>
                 <ul>
-                  <li><span class="b">01</span><span><strong>Payment failures — LedgerVault 429 rate-limit + retry amplification</strong></span><span class="src">0.94</span></li>
-                  <li><span class="b">02</span><span><strong>incident-runbook.md</strong> — payment incident handling</span><span class="src">0.91</span></li>
-                  <li><span class="b">03</span><span><strong>#payments-eng</strong> — retry kill switch off</span><span class="src">0.88</span></li>
-                  <li><span class="b">04</span><span><strong>SUP-2089</strong> — BigCo settlement failures</span><span class="src">0.82</span></li>
-                  <li><span class="b">05</span><span><strong>vendor-status notes</strong> — public page green, per-key 429s spiking</span><span class="src">0.79</span></li>
+                  <li><span class="b">01</span><span><strong>Payment failures - LedgerVault 429 rate-limit + retry amplification</strong></span><span class="src">0.94</span></li>
+                  <li><span class="b">02</span><span><strong>incident-runbook.md</strong> - payment incident handling</span><span class="src">0.91</span></li>
+                  <li><span class="b">03</span><span><strong>#payments-eng</strong> - retry kill switch off</span><span class="src">0.88</span></li>
+                  <li><span class="b">04</span><span><strong>SUP-2089</strong> - BigCo settlement failures</span><span class="src">0.82</span></li>
+                  <li><span class="b">05</span><span><strong>vendor-status notes</strong> - public page green, per-key 429s spiking</span><span class="src">0.79</span></li>
                   <li><span class="b">·</span><span style="color: var(--ink-3)">…and 14 more</span><span class="src">+14</span></li>
                 </ul>
               </div>
@@ -1270,7 +1270,7 @@ body { padding-bottom: 120px; }
                 <span class="ts">+8.21s</span>
               </div>
               <div class="io-block">
-                <span class="ok">✓</span> Done — wrote <span style="color:var(--ink-1)">episodic</span> and <span style="color:var(--ink-1)">procedural</span> memories about LedgerVault 429 + retry-amplification payment failures.
+                <span class="ok">✓</span> Done - wrote <span style="color:var(--ink-1)">episodic</span> and <span style="color:var(--ink-1)">procedural</span> memories about LedgerVault 429 + retry-amplification payment failures.
               </div>
             </div>
           </div>
@@ -1368,7 +1368,7 @@ body { padding-bottom: 120px; }
         </div>
         <div class="pb">
           <div class="empty-state">
-            <div class="b">— NONE THIS RUN —</div>
+            <div class="b">- NONE THIS RUN -</div>
             <div class="s">No documents, briefs or PRs were shipped. Diagnostic-only.</div>
           </div>
         </div>
