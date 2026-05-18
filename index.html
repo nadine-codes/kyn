@@ -256,6 +256,56 @@
     .flow-grid { grid-template-columns: 1fr; }
     .sec-head { grid-template-columns: 1fr; }
   }
+
+  @media (max-width: 760px) {
+    .lp-shell { padding: 0 var(--s-5); }
+    .lp-top-inner { padding: 12px var(--s-5); gap: var(--s-3); }
+    .lp-nav { display: none; }
+    .lp-mark .word { font-size: 16px; }
+
+    .hero { padding: 64px 0 56px; }
+    .hero h1 { font-size: clamp(40px, 11vw, 64px); letter-spacing: -0.03em; line-height: 0.95; }
+    .hero h1 br { display: none; }
+    .hero-sub { font-size: 16px; margin-top: var(--s-5); }
+    .hero-ambient { font-size: clamp(160px, 40vw, 240px); top: 35%; opacity: 0.4; }
+    .hero-eyebrow .t-eyebrow { font-size: 10px; }
+    .hero-ctas { gap: 10px; }
+    .hero-ctas .btn-cta-primary, .hero-ctas .btn-cta-ghost { flex: 1; justify-content: center; padding: 13px 16px; font-size: 13.5px; }
+    .hero-stats { gap: var(--s-5); flex-wrap: wrap; margin-top: var(--s-8); padding-top: var(--s-5); }
+    .hero-stats .cell { flex: 1 1 40%; }
+    .hero-stats .num { font-size: 24px; }
+
+    .sec { padding: 64px 0; }
+    .sec-title { font-size: clamp(28px, 7vw, 40px); }
+    .sec-head { gap: var(--s-4); margin-bottom: var(--s-8); }
+
+    .cap-grid { grid-template-columns: 1fr; }
+    .cap { min-height: 0; padding: var(--s-5); }
+    .cap .name { font-size: 20px; }
+
+    .flow { padding: var(--s-6) var(--s-4); }
+    .flow-center { padding: var(--s-5); }
+    .flow-center .ttl { font-size: 22px; }
+
+    .integ-strip { grid-template-columns: 1fr; }
+    .integ { padding: var(--s-5); border-bottom: 1px solid var(--surface-line); border-right: 0; }
+    .integ:last-child { border-bottom: 0; }
+
+    .run-card-body { padding: var(--s-5); }
+    .run-card-body .q { font-size: 18px; }
+    .trail-row { font-size: 10.5px; }
+    .run-card-foot { padding: 12px var(--s-4); flex-wrap: wrap; gap: 8px; }
+    .run-card-foot .meta { font-size: 9.5px; }
+
+    .cta-block { padding: var(--s-10) var(--s-5); }
+    .cta-block h2 { font-size: clamp(32px, 10vw, 56px); }
+    .cta-block .row { flex-direction: column; width: 100%; gap: 10px; }
+    .cta-block .row a { justify-content: center; }
+
+    .lp-foot { padding: var(--s-8) 0; margin-top: var(--s-8); }
+    .lp-foot-inner { flex-direction: column; align-items: flex-start; gap: var(--s-4); }
+    .lp-foot-nav { flex-wrap: wrap; gap: var(--s-3) var(--s-4); }
+  }
 </style>
 </head>
 <body screen="Landing — Kyn">
@@ -473,7 +523,7 @@
       <a href="/design-system">Design system</a>
       <a href="#cta">Request access</a>
     </nav>
-    <span class="lp-foot-mono">© 2026 KYN LABS</span>
+    <span class="lp-foot-mono">© 2025 KYN LABS</span>
   </div>
 </footer>
 

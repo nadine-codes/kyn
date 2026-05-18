@@ -336,6 +336,77 @@ body { padding-bottom: 120px; }
   .kyn-hero .meta-row { grid-template-columns: repeat(2, 1fr); }
   .type-row { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 640px) {
+  /* topbar collapses */
+  .kyn-topbar-inner { padding: 12px var(--s-4); gap: var(--s-3); flex-wrap: wrap; }
+  .kyn-topbar-inner nav { display: none; }
+  .kyn-topbar-inner .btn-ghost { display: none; }
+
+  /* page padding */
+  .kyn-page { padding: var(--s-8) var(--s-4); }
+  .kyn-divider { margin: var(--s-8) 0; }
+
+  /* hero — keep big serif but reasonable */
+  .kyn-hero { padding: var(--s-16) var(--s-4) var(--s-8); }
+  .kyn-hero h1 { font-size: clamp(48px, 16vw, 88px); letter-spacing: -0.035em; }
+  .kyn-hero .lede { font-size: 15px; margin-top: var(--s-5); }
+  .kyn-hero .meta-row { grid-template-columns: 1fr; gap: var(--s-3); margin-top: var(--s-6); padding-top: var(--s-5); }
+  .kyn-hero .meta-row .v { font-size: 14px; }
+  .kyn-hero-eyebrows { flex-wrap: wrap; gap: 8px; }
+
+  /* ambient stage shorter */
+  .ambient-stage { height: 140px; margin: var(--s-8) 0; }
+  .ambient-stage .word { font-size: clamp(80px, 28vw, 160px); }
+
+  /* section header */
+  .section-header { grid-template-columns: 36px 1fr; gap: var(--s-3); margin-bottom: var(--s-5); }
+  .t-display-md { font-size: clamp(24px, 7vw, 36px); }
+
+  /* color/type/space */
+  .color-grid, .color-grid.surfaces, .color-grid.statuses { grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+  .swatch-color { aspect-ratio: 2/1; }
+  .swatch-meta { padding: 8px 10px; }
+  .swatch-meta .name { font-size: 12px; }
+  .swatch-meta .hex { font-size: 10px; }
+
+  .type-row { gap: var(--s-3); padding-bottom: var(--s-4); }
+  .type-stack { gap: var(--s-5); }
+  .t-display-xl { font-size: 56px !important; }
+  .t-display-lg { font-size: 40px; }
+
+  /* component grid panels */
+  .comp-card .head { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+  .comp-card .body { padding: var(--s-4); }
+  .comp-card .body[style*="grid-template-columns"] { display: flex !important; flex-direction: column; }
+
+  .space-ramp { gap: 6px; flex-wrap: wrap; justify-content: flex-start !important; }
+  .space-ramp .step .bar { width: 18px; }
+  .radius-ramp .chip { width: 64px; height: 64px; }
+
+  /* run mock */
+  .run-shell { padding: var(--s-6) var(--s-4); gap: var(--s-4); }
+  .run-title { font-size: 32px; }
+  .run-step { grid-template-columns: 24px 1fr; gap: 10px; }
+  .run-step > :last-child { grid-column: 1 / -1; justify-self: flex-start; margin-top: 2px; }
+
+  /* history table — horizontal scroll */
+  .kyn-card .kyn-row[style*="space-between"] { flex-wrap: wrap; gap: var(--s-3); }
+  .history-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .history-table thead th, .history-table tbody td { padding: 10px var(--s-3); }
+
+  /* topbar mark scale-down */
+  .kyn-mark .word { font-size: 15px; }
+  .kyn-mark .reg { font-size: 8px; }
+
+  /* footer */
+  .kyn-foot { flex-direction: column; align-items: flex-start; gap: var(--s-3); padding: var(--s-6) var(--s-4) 0; }
+}
+
+@media (max-width: 420px) {
+  .color-grid, .color-grid.surfaces, .color-grid.statuses { grid-template-columns: 1fr; }
+  .kyn-hero h1 { font-size: clamp(40px, 14vw, 64px); }
+}
 </style>
 </head>
 <body data-screen-label="00 Cover">
@@ -984,6 +1055,7 @@ body { padding-bottom: 120px; }
 <!-- ===================== FOOTER ===================== -->
 <footer class="kyn-foot">
   <span>KYN · DESIGN SYSTEM · V0.1.0</span>
+  <span>BLEND OF RELATS · PEPTSIGHT — DARK + ORANGE</span>
 </footer>
 
 </body>

@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# Local build/staging output (responsive dist) — contents are copied to repo root
+kynmobileresponsivedist2/
