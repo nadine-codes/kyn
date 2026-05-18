@@ -866,6 +866,21 @@ body { padding-bottom: 120px; }
   .kpi-row .kpi:last-child { border-bottom: 0; }
   .answer-lede { font-size: 17px; }
 }
+
+/* shared site footer (ported from landing) */
+.lp-shell { max-width: 1320px; margin: 0 auto; padding: 0 var(--s-8); }
+.lp-foot { padding: var(--s-12) 0 var(--s-10); border-top: 1px solid var(--surface-line); margin-top: var(--s-12); }
+.lp-foot-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-8); flex-wrap: wrap; }
+.lp-foot-mono { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-mono); color: var(--ink-3); }
+.lp-foot-nav { display: flex; gap: var(--s-6); align-items: center; }
+.lp-foot-nav a { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); text-decoration: none; transition: color var(--dur-2); }
+.lp-foot-nav a:hover { color: var(--orange-500); }
+@media (max-width: 760px) {
+  .lp-shell { padding: 0 var(--s-5); }
+  .lp-foot { padding: var(--s-8) 0; margin-top: var(--s-8); }
+  .lp-foot-inner { flex-direction: column; align-items: flex-start; gap: var(--s-4); }
+  .lp-foot-nav { flex-wrap: wrap; gap: var(--s-3) var(--s-4); }
+}
 </style>
 </head>
 <body data-screen-label="Run · Why are payments failing right now?">
@@ -1382,6 +1397,19 @@ body { padding-bottom: 120px; }
     </aside>
   </div>
 </main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="lp-foot">
+  <div class="lp-shell lp-foot-inner">
+    <a class="kyn-mark" href="/" style="text-decoration: none; color: inherit;"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <nav class="lp-foot-nav">
+      <a href="/">Home</a>
+      <a href="/run">Demo</a>
+      <a href="/design-system">Design system</a>
+    </nav>
+    <span class="lp-foot-mono">© 2026 KYN LABS</span>
+  </div>
+</footer>
 
 </body>
 </html>
