@@ -379,6 +379,11 @@ body { padding-bottom: 120px; }
   .comp-card .head { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
   .comp-card .body { padding: var(--s-4); }
   .comp-card .body[style*="grid-template-columns"] { display: flex !important; flex-direction: column; }
+  .comp-card .body .kyn-card { padding: var(--s-4); min-width: 0; }
+  .comp-card .body .kyn-log { padding: 0 var(--s-3) var(--s-3) !important; font-size: 11px; }
+  .comp-card .body .kyn-log .row { grid-template-columns: 56px 1fr; gap: 8px; min-width: 0; }
+  .comp-card .body .kyn-log .row > span { min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+  .comp-card .body .statgrid[style*="repeat(4"] { grid-template-columns: repeat(2, 1fr) !important; }
 
   .space-ramp { gap: 4px; flex-wrap: nowrap; justify-content: space-between !important; }
   .space-ramp .step { min-width: 0; flex: 1 1 0; }
