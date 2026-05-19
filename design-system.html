@@ -380,8 +380,10 @@ body { padding-bottom: 120px; }
   .comp-card .body { padding: var(--s-4); }
   .comp-card .body[style*="grid-template-columns"] { display: flex !important; flex-direction: column; }
 
-  .space-ramp { gap: 6px; flex-wrap: wrap; justify-content: flex-start !important; }
-  .space-ramp .step .bar { width: 18px; }
+  .space-ramp { gap: 4px; flex-wrap: nowrap; justify-content: space-between !important; }
+  .space-ramp .step { min-width: 0; flex: 1 1 0; }
+  .space-ramp .step .bar { width: 100%; max-width: 18px; }
+  .space-ramp .step .t-mono-sm { font-size: 9px; letter-spacing: 0; white-space: nowrap; }
   .radius-ramp .chip { width: 64px; height: 64px; }
 
   /* run mock */
