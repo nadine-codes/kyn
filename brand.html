@@ -24,7 +24,7 @@
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--surface-line);
   }
-  .lp-top-inner { max-width: 1320px; margin: 0 auto; padding: 14px var(--s-8); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s-6); }
+  .lp-top-inner { max-width: 1320px; margin: 0 auto; padding: 0 var(--s-8); height: 64px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s-6); }
   .lp-top-inner > :first-child { justify-self: start; }
   .lp-top-inner > :last-child { justify-self: end; }
   .lp-mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-1); }
@@ -50,6 +50,15 @@
     box-shadow: var(--bevel); cursor: pointer; transition: background var(--dur-2);
   }
   .btn-cta-ghost:hover { background: var(--surface-3); }
+  .btn-cta-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--orange-500); color: #fff; border: 0;
+    border-radius: var(--r-pill); padding: 9px 16px;
+    font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    box-shadow: var(--bevel), 0 8px 24px -8px var(--orange-glow);
+    cursor: pointer; transition: transform var(--dur-1), background var(--dur-2);
+  }
+  .btn-cta-primary:hover { background: var(--orange-600); transform: translateY(-1px); }
   .arrow { width: 14px; height: 14px; }
 
   /* ============= PAGE HEAD ============= */
@@ -107,7 +116,7 @@
   .lp-foot-nav a:hover { color: var(--orange-500); }
 
   @media (max-width: 720px) {
-    .lp-top-inner { display: flex; justify-content: space-between; }
+    .lp-top-inner { display: flex; justify-content: space-between; height: auto; padding: 12px var(--s-5); }
     .lp-top-inner > nav { display: none; }
     .brand-doc { padding: 0 var(--s-4); }
     .brand-viewer { flex-direction: column; height: 80vh; }
@@ -131,6 +140,9 @@
       <a href="/design-system">Design system</a>
       <a href="/brand" aria-current="page">Brand</a>
     </nav>
+    <div style="display:flex; gap: var(--s-2); align-items:center;">
+      <a class="btn-cta-primary" href="/run">View demo <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg></a>
+    </div>
   </div>
 </header>
 
