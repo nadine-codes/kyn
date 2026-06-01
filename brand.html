@@ -55,15 +55,42 @@
   .brand-head h1 { font-family: var(--font-display); font-size: clamp(36px, 5vw, 64px); line-height: 0.96; letter-spacing: -0.035em; font-weight: 500; margin: 0; }
   .brand-head p { color: var(--ink-3); font-size: 16px; max-width: 56ch; margin: var(--s-4) 0 0; line-height: 1.55; }
 
-  /* ============= PDF VIEWER ============= */
+  /* ============= PDF VIEWER (PDF.js) ============= */
   .brand-doc { max-width: 1320px; margin: 0 auto var(--s-10); padding: 0 var(--s-8); flex: 1; width: 100%; box-sizing: border-box; display: flex; }
-  .brand-frame {
-    flex: 1; width: 100%; min-height: min(82vh, 1000px);
+  .brand-viewer {
+    flex: 1; width: 100%; height: min(82vh, 1000px);
+    display: flex; gap: 0;
     border: 1px solid var(--surface-line); border-radius: var(--r-lg, 14px);
     background: var(--surface-1); box-shadow: var(--bevel);
     overflow: hidden;
   }
-  .brand-frame iframe, .brand-frame object { width: 100%; height: 100%; border: 0; display: block; }
+  /* Left thumbnail rail */
+  .thumb-rail {
+    flex: 0 0 148px; width: 148px; overflow-y: auto; overflow-x: hidden;
+    background: var(--surface-1); border-right: 1px solid var(--surface-line);
+    padding: var(--s-4); display: flex; flex-direction: column; gap: var(--s-3);
+    scrollbar-width: thin;
+  }
+  .thumb {
+    appearance: none; background: var(--surface-2); border: 1px solid var(--surface-line);
+    border-radius: 8px; padding: 6px; cursor: pointer; position: relative;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    transition: border-color var(--dur-2), background var(--dur-2);
+  }
+  .thumb:hover { border-color: var(--ink-4); background: var(--surface-3); }
+  .thumb.is-active { border-color: var(--orange-500); box-shadow: 0 0 0 1px var(--orange-500); }
+  .thumb canvas { width: 100%; height: auto; display: block; border-radius: 3px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.35); }
+  .thumb .num { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--ink-3); }
+  .thumb.is-active .num { color: var(--orange-500); }
+  /* Main page stack */
+  .page-stack {
+    flex: 1; overflow-y: auto; padding: var(--s-6); background: var(--surface-2);
+    display: flex; flex-direction: column; align-items: center; gap: var(--s-6);
+    scrollbar-width: thin;
+  }
+  .page-stack .page { width: 100%; max-width: 920px; display: flex; justify-content: center; }
+  .page-stack canvas { max-width: 100%; height: auto; display: block; border-radius: 4px; background: #fff; box-shadow: 0 6px 24px -10px rgba(0,0,0,0.55); }
+  .viewer-status { margin: auto; color: var(--ink-3); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.04em; }
   .brand-fallback { padding: var(--s-8); text-align: center; color: var(--ink-3); font-size: 14px; }
 
   /* ============= FOOTER ============= */
@@ -76,7 +103,13 @@
 
   @media (max-width: 720px) {
     .lp-nav { display: none; }
-    .brand-frame { min-height: 70vh; }
+    .brand-doc { padding: 0 var(--s-4); }
+    .brand-viewer { flex-direction: column; height: 80vh; }
+    .thumb-rail {
+      flex: 0 0 auto; width: 100%; flex-direction: row; overflow-x: auto; overflow-y: hidden;
+      border-right: 0; border-bottom: 1px solid var(--surface-line);
+    }
+    .thumb { flex: 0 0 84px; width: 84px; }
   }
 </style>
 </head>
@@ -102,19 +135,16 @@
     <span class="t">KYN · BRAND IDENTITY SYSTEM</span>
   </div>
   <h1>Brand identity system</h1>
-  <p>The complete kyn identity: logo construction, typography, color, and usage guidelines. Scroll the 10 page PDF below.</p>
+  <p>Scroll the complete 10-page kyn brand identity system below.</p>
 </section>
 
 <!-- ===================== PDF VIEWER ===================== -->
 <section class="brand-doc">
-  <div class="brand-frame">
-    <object data="/kyn-brand-system.pdf#toolbar=0&navpanes=0&view=FitH" type="application/pdf">
-      <iframe src="/kyn-brand-system.pdf#toolbar=0&navpanes=0&view=FitH" title="kyn brand identity system"></iframe>
-      <div class="brand-fallback">
-        Your browser can't display the PDF inline.
-        <a href="/kyn-brand-system.pdf" style="color: var(--orange-500);">Open the brand system PDF</a>.
-      </div>
-    </object>
+  <div class="brand-viewer">
+    <aside class="thumb-rail" id="thumbRail" aria-label="Page thumbnails"></aside>
+    <div class="page-stack" id="pageStack">
+      <div class="viewer-status" id="viewerStatus">Loading brand system…</div>
+    </div>
   </div>
 </section>
 
@@ -131,6 +161,116 @@
     <span class="lp-foot-mono">© 2026 KYN LABS</span>
   </div>
 </footer>
+
+<!-- ===================== PDF.js VIEWER SCRIPT ===================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function () {
+  var PDF_URL = '/kyn-brand-system.pdf';
+  var stack  = document.getElementById('pageStack');
+  var rail   = document.getElementById('thumbRail');
+  var status = document.getElementById('viewerStatus');
+
+  function fail() {
+    if (rail) rail.style.display = 'none';
+    stack.innerHTML =
+      '<div class="brand-fallback">Couldn\'t load the inline viewer. ' +
+      '<a href="' + PDF_URL + '" style="color: var(--orange-500);">Open the brand system PDF</a>.</div>';
+  }
+
+  if (!window.pdfjsLib) { fail(); return; }
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  pdfjsLib.getDocument(PDF_URL).promise.then(function (pdf) {
+    if (status) status.remove();
+
+    var pageEls = [];   // main page wrappers, indexed 0..n-1
+    var thumbEls = [];  // thumbnail buttons, indexed 0..n-1
+
+    // Width available to a full page (account for stack padding).
+    function mainTargetWidth() {
+      var max = 920;
+      var avail = stack.clientWidth - 48; // ~ padding allowance
+      return Math.max(280, Math.min(max, avail));
+    }
+
+    function renderPage(num) {
+      return pdf.getPage(num).then(function (page) {
+        // ---- Main page ----
+        var wrap = document.createElement('div');
+        wrap.className = 'page';
+        wrap.dataset.page = num;
+        var canvas = document.createElement('canvas');
+        wrap.appendChild(canvas);
+        stack.appendChild(wrap);
+        pageEls[num - 1] = wrap;
+
+        var base = page.getViewport({ scale: 1 });
+        var scale = mainTargetWidth() / base.width;
+        var vp = page.getViewport({ scale: scale * dpr });
+        canvas.width = vp.width;
+        canvas.height = vp.height;
+        canvas.style.width = (vp.width / dpr) + 'px';
+        var ctx = canvas.getContext('2d');
+        page.render({ canvasContext: ctx, viewport: vp });
+
+        // ---- Thumbnail ----
+        var thumb = document.createElement('button');
+        thumb.className = 'thumb';
+        thumb.type = 'button';
+        thumb.setAttribute('aria-label', 'Go to page ' + num);
+        var tcanvas = document.createElement('canvas');
+        var tnum = document.createElement('span');
+        tnum.className = 'num';
+        tnum.textContent = num;
+        thumb.appendChild(tcanvas);
+        thumb.appendChild(tnum);
+        rail.appendChild(thumb);
+        thumbEls[num - 1] = thumb;
+
+        var tWidth = 112; // px of thumbnail bitmap
+        var tScale = tWidth / base.width;
+        var tvp = page.getViewport({ scale: tScale * dpr });
+        tcanvas.width = tvp.width;
+        tcanvas.height = tvp.height;
+        tcanvas.style.width = (tvp.width / dpr) + 'px';
+        page.render({ canvasContext: tcanvas.getContext('2d'), viewport: tvp });
+
+        thumb.addEventListener('click', function () {
+          // Scroll only the stack container (not the window), leaving a little
+          // breathing room so the page top isn't clipped against the edge.
+          var delta = wrap.getBoundingClientRect().top - stack.getBoundingClientRect().top;
+          stack.scrollBy({ top: delta - 16, behavior: 'smooth' });
+        });
+      });
+    }
+
+    // Render sequentially so order is preserved and memory stays sane.
+    var chain = Promise.resolve();
+    for (var i = 1; i <= pdf.numPages; i++) {
+      (function (n) { chain = chain.then(function () { return renderPage(n); }); })(i);
+    }
+
+    chain.then(function () {
+      // Highlight the page currently in view.
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var idx = parseInt(e.target.dataset.page, 10) - 1;
+          thumbEls.forEach(function (t, j) {
+            if (t) t.classList.toggle('is-active', j === idx);
+          });
+        });
+      }, { root: stack, threshold: 0.5 });
+      pageEls.forEach(function (el) { if (el) io.observe(el); });
+      if (thumbEls[0]) thumbEls[0].classList.add('is-active');
+    });
+  }).catch(fail);
+})();
+</script>
 
 </body>
 </html>
