@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>kyn® - Run · Why are payments failing right now?</title>
+<title>kyn™ - Run · Why are payments failing right now?</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -871,7 +871,10 @@
 }
 
 @media (max-width: 420px) {
-  .run-head .meta .cell { flex: 1 1 100%; }
+  /* Pack the run stats (duration/tools/findings/artifacts/started) onto as
+     few lines as fit instead of one cell per line. */
+  .run-head .meta { gap: var(--s-3) var(--s-5); }
+  .run-head .meta .cell { flex: 0 1 auto; }
   .kpi-row { grid-template-columns: 1fr; }
   .kpi-row .kpi { border-right: 0; }
   .kpi-row .kpi:nth-last-child(-n+2) { border-bottom: 1px solid var(--surface-line); }
@@ -1413,7 +1416,7 @@
 <!-- ===================== FOOTER ===================== -->
 <footer class="lp-foot">
   <div class="lp-shell lp-foot-inner">
-    <a class="kyn-mark" href="/" style="text-decoration: none; color: inherit;"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <a class="kyn-mark" href="/" style="text-decoration: none; color: inherit;"><span class="glyph"></span><span class="word">kyn<span class="reg">™</span></span></a>
     <nav class="lp-foot-nav">
       <a href="/">Home</a>
       <a href="/run">Demo</a>
