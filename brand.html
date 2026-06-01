@@ -198,7 +198,7 @@
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var dpr = Math.min(window.devicePixelRatio || 1, 3);
   var THUMB_W = 112;
   var ric = window.requestIdleCallback || function (cb) { return setTimeout(function () { cb(); }, 200); };
 
