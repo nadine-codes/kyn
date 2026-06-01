@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kyn — Brand identity system</title>
+<meta name="description" content="The kyn brand identity system — logo, type, color, and usage." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="tokens.css" />
+<style>
+  html, body { height: 100%; }
+  body { margin: 0; display: flex; flex-direction: column; min-height: 100vh; background: var(--surface-0); color: var(--ink-1); overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ============= TOPBAR (matches landing) ============= */
+  .lp-top {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in oklch, var(--surface-0) 86%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--surface-line);
+  }
+  .lp-top-inner { max-width: 1320px; margin: 0 auto; padding: 14px var(--s-8); display: flex; align-items: center; justify-content: space-between; gap: var(--s-6); }
+  .lp-mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-1); }
+  .lp-mark .glyph {
+    width: 26px; height: 26px; background: var(--orange-500); border-radius: 7px;
+    position: relative; box-shadow: var(--bevel), 0 1px 0 rgba(0,0,0,0.4); display: inline-block;
+  }
+  .lp-mark .glyph::after {
+    content: ""; position: absolute; inset: 6px; border: 2px solid #fff; border-radius: 3px;
+    border-right-color: transparent; border-bottom-color: transparent; transform: rotate(45deg);
+  }
+  .lp-mark .word { font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  .lp-mark .reg { font-family: var(--font-mono); font-size: 9px; color: var(--ink-3); margin-left: 2px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: super; }
+  .lp-nav { display: flex; gap: var(--s-6); align-items: center; }
+  .lp-nav a { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); transition: color var(--dur-2); }
+  .lp-nav a:hover, .lp-nav a[aria-current="page"] { color: var(--ink-1); }
+
+  .btn-cta-ghost {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--surface-2); color: var(--ink-1); border: 1px solid var(--surface-line);
+    border-radius: var(--r-pill); padding: 9px 16px;
+    font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    box-shadow: var(--bevel); cursor: pointer; transition: background var(--dur-2);
+  }
+  .btn-cta-ghost:hover { background: var(--surface-3); }
+  .arrow { width: 14px; height: 14px; }
+
+  /* ============= PAGE HEAD ============= */
+  .brand-head { max-width: 1320px; margin: 0 auto; padding: var(--s-10) var(--s-8) var(--s-6); }
+  .brand-eyebrow { display: flex; align-items: center; gap: 12px; margin-bottom: var(--s-4); }
+  .brand-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--orange-500); box-shadow: 0 0 12px var(--orange-glow); }
+  .brand-eyebrow span.t { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); }
+  .brand-head h1 { font-family: var(--font-display); font-size: clamp(36px, 5vw, 64px); line-height: 0.96; letter-spacing: -0.035em; font-weight: 500; margin: 0; }
+  .brand-head p { color: var(--ink-3); font-size: 16px; max-width: 56ch; margin: var(--s-4) 0 0; line-height: 1.55; }
+
+  /* ============= PDF VIEWER ============= */
+  .brand-doc { max-width: 1320px; margin: 0 auto var(--s-10); padding: 0 var(--s-8); flex: 1; width: 100%; box-sizing: border-box; display: flex; }
+  .brand-frame {
+    flex: 1; width: 100%; min-height: min(82vh, 1000px);
+    border: 1px solid var(--surface-line); border-radius: var(--r-lg, 14px);
+    background: var(--surface-1); box-shadow: var(--bevel);
+    overflow: hidden;
+  }
+  .brand-frame iframe, .brand-frame object { width: 100%; height: 100%; border: 0; display: block; }
+  .brand-fallback { padding: var(--s-8); text-align: center; color: var(--ink-3); font-size: 14px; }
+
+  /* ============= FOOTER ============= */
+  .lp-foot { padding: var(--s-12) 0 var(--s-10); border-top: 1px solid var(--surface-line); }
+  .lp-foot-inner { max-width: 1320px; margin: 0 auto; padding: 0 var(--s-8); display: flex; align-items: center; justify-content: space-between; gap: var(--s-8); flex-wrap: wrap; }
+  .lp-foot-mono { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-mono); color: var(--ink-3); }
+  .lp-foot-nav { display: flex; gap: var(--s-6); align-items: center; }
+  .lp-foot-nav a { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--ink-3); transition: color var(--dur-2); }
+  .lp-foot-nav a:hover { color: var(--orange-500); }
+
+  @media (max-width: 720px) {
+    .lp-nav { display: none; }
+    .brand-frame { min-height: 70vh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== TOPBAR ===================== -->
+<header class="lp-top" data-screen-label="Brand">
+  <div class="lp-top-inner">
+    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <nav class="lp-nav">
+      <a href="/#capabilities">Capabilities</a>
+      <a href="/run">Demo</a>
+      <a href="/design-system">Design system</a>
+      <a href="/brand" aria-current="page">Brand</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== PAGE HEAD ===================== -->
+<section class="brand-head">
+  <div class="brand-eyebrow">
+    <span class="dot"></span>
+    <span class="t">KYN · BRAND IDENTITY SYSTEM</span>
+  </div>
+  <h1>Brand identity system</h1>
+  <p>The complete kyn identity: logo construction, typography, color, and usage guidelines. Scroll the 10 page PDF below.</p>
+</section>
+
+<!-- ===================== PDF VIEWER ===================== -->
+<section class="brand-doc">
+  <div class="brand-frame">
+    <object data="/kyn-brand-system.pdf#toolbar=0&navpanes=0&view=FitH" type="application/pdf">
+      <iframe src="/kyn-brand-system.pdf#toolbar=0&navpanes=0&view=FitH" title="kyn brand identity system"></iframe>
+      <div class="brand-fallback">
+        Your browser can't display the PDF inline.
+        <a href="/kyn-brand-system.pdf" style="color: var(--orange-500);">Open the brand system PDF</a>.
+      </div>
+    </object>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="lp-foot">
+  <div class="lp-foot-inner">
+    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <nav class="lp-foot-nav">
+      <a href="/">Home</a>
+      <a href="/run">Demo</a>
+      <a href="/design-system">Design system</a>
+      <a href="/brand">Brand</a>
+    </nav>
+    <span class="lp-foot-mono">© 2026 KYN LABS</span>
+  </div>
+</footer>
+
+</body>
+</html>
