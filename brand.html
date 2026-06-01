@@ -199,6 +199,12 @@
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
   var dpr = Math.min(window.devicePixelRatio || 1, 3);
+  // Oversample the main pages beyond their on-screen size so the dense slides
+  // stay sharp at 1x and when pinch-zoomed. QUALITY is the multiple of native
+  // device pixels we render at; MAX_BACKING_W caps the canvas so we stay within
+  // mobile Safari's per-canvas memory limits.
+  var QUALITY = 2;
+  var MAX_BACKING_W = 2600;
   var THUMB_W = 112;
   var ric = window.requestIdleCallback || function (cb) { return setTimeout(function () { cb(); }, 200); };
 
@@ -271,7 +277,12 @@
       function renderMain(entry) {
         if (entry.done) return Promise.resolve();
         if (entry.task) return entry.task;
-        var vp = entry.page.getViewport({ scale: (mainW / entry.base.width) * dpr });
+        // Backing-store width = display width x device density x oversample,
+        // capped so huge pages don't exceed mobile canvas limits. The canvas is
+        // still displayed at mainW (set in the placeholder), so the browser
+        // downscales this larger raster => crisp text, zoom-tolerant.
+        var backingW = Math.min(MAX_BACKING_W, Math.round(mainW * dpr * QUALITY));
+        var vp = entry.page.getViewport({ scale: backingW / entry.base.width });
         entry.canvas.width = vp.width;
         entry.canvas.height = vp.height;
         entry.task = entry.page.render({
