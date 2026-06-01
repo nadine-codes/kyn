@@ -9,6 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="tokens.css" />
+<!-- Warm up the PDF.js CDN + start fetching the library during parse -->
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+<link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin />
 <style>
   html, body { height: 100%; }
   body { margin: 0; display: flex; flex-direction: column; min-height: 100vh; background: var(--surface-0); color: var(--ink-1); overflow-x: hidden; }
@@ -183,90 +186,119 @@
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var THUMB_W = 112;
+  var ric = window.requestIdleCallback || function (cb) { return setTimeout(function () { cb(); }, 200); };
 
-  pdfjsLib.getDocument(PDF_URL).promise.then(function (pdf) {
-    if (status) status.remove();
+  // disableAutoFetch + range requests => only the bytes needed for the pages
+  // being rendered are fetched, so page 1 appears without waiting for all 7 MB.
+  pdfjsLib.getDocument({ url: PDF_URL, disableAutoFetch: true, disableStream: false })
+    .promise.then(function (pdf) {
 
-    var pageEls = [];   // main page wrappers, indexed 0..n-1
-    var thumbEls = [];  // thumbnail buttons, indexed 0..n-1
-
-    // Width available to a full page (account for stack padding).
     function mainTargetWidth() {
-      var max = 920;
       var avail = stack.clientWidth - 48; // ~ padding allowance
-      return Math.max(280, Math.min(max, avail));
+      return Math.max(280, Math.min(920, avail));
     }
+    var mainW = mainTargetWidth();
+    var entries = [];
 
-    function renderPage(num) {
-      return pdf.getPage(num).then(function (page) {
-        // ---- Main page ----
+    // Grab every page's dimensions up front (cheap dict reads, not image data)
+    // so we can lay out correctly-sized placeholders and the thumbnail rail
+    // immediately — before any heavy rendering happens.
+    var gets = [];
+    for (var i = 1; i <= pdf.numPages; i++) gets.push(pdf.getPage(i));
+
+    Promise.all(gets).then(function (pages) {
+      pages.forEach(function (page, idx) {
+        var num = idx + 1;
+        var base = page.getViewport({ scale: 1 });
+        var ratio = base.height / base.width;
+
+        // --- main page placeholder (blank, correctly sized) ---
         var wrap = document.createElement('div');
         wrap.className = 'page';
         wrap.dataset.page = num;
         var canvas = document.createElement('canvas');
+        canvas.style.width = mainW + 'px';
+        canvas.style.height = Math.round(mainW * ratio) + 'px';
         wrap.appendChild(canvas);
         stack.appendChild(wrap);
-        pageEls[num - 1] = wrap;
 
-        var base = page.getViewport({ scale: 1 });
-        var scale = mainTargetWidth() / base.width;
-        var vp = page.getViewport({ scale: scale * dpr });
-        canvas.width = vp.width;
-        canvas.height = vp.height;
-        canvas.style.width = (vp.width / dpr) + 'px';
-        var ctx = canvas.getContext('2d');
-        page.render({ canvasContext: ctx, viewport: vp });
-
-        // ---- Thumbnail ----
+        // --- thumbnail placeholder ---
         var thumb = document.createElement('button');
         thumb.className = 'thumb';
         thumb.type = 'button';
         thumb.setAttribute('aria-label', 'Go to page ' + num);
         var tcanvas = document.createElement('canvas');
+        tcanvas.width = Math.round(THUMB_W * dpr);
+        tcanvas.height = Math.round(THUMB_W * ratio * dpr);
+        tcanvas.style.width = THUMB_W + 'px';
         var tnum = document.createElement('span');
         tnum.className = 'num';
         tnum.textContent = num;
         thumb.appendChild(tcanvas);
         thumb.appendChild(tnum);
         rail.appendChild(thumb);
-        thumbEls[num - 1] = thumb;
 
-        var tWidth = 112; // px of thumbnail bitmap
-        var tScale = tWidth / base.width;
-        var tvp = page.getViewport({ scale: tScale * dpr });
-        tcanvas.width = tvp.width;
-        tcanvas.height = tvp.height;
-        tcanvas.style.width = (tvp.width / dpr) + 'px';
-        page.render({ canvasContext: tcanvas.getContext('2d'), viewport: tvp });
+        var entry = { num: num, page: page, base: base, ratio: ratio,
+                      wrap: wrap, canvas: canvas, tcanvas: tcanvas,
+                      done: false, task: null };
+        entries.push(entry);
 
         thumb.addEventListener('click', function () {
-          // Scroll only the stack container (not the window), leaving a little
-          // breathing room so the page top isn't clipped against the edge.
           var delta = wrap.getBoundingClientRect().top - stack.getBoundingClientRect().top;
           stack.scrollBy({ top: delta - 16, behavior: 'smooth' });
+          renderMain(entry);
         });
       });
-    }
 
-    // Render sequentially so order is preserved and memory stays sane.
-    var chain = Promise.resolve();
-    for (var i = 1; i <= pdf.numPages; i++) {
-      (function (n) { chain = chain.then(function () { return renderPage(n); }); })(i);
-    }
+      // Render one main page (fetches only that page's bytes) and derive its
+      // thumbnail by downscaling the result — no extra fetch for thumbnails.
+      function renderMain(entry) {
+        if (entry.done) return Promise.resolve();
+        if (entry.task) return entry.task;
+        var vp = entry.page.getViewport({ scale: (mainW / entry.base.width) * dpr });
+        entry.canvas.width = vp.width;
+        entry.canvas.height = vp.height;
+        entry.task = entry.page.render({
+          canvasContext: entry.canvas.getContext('2d'), viewport: vp
+        }).promise.then(function () {
+          entry.done = true; entry.task = null;
+          entry.tcanvas.getContext('2d').drawImage(
+            entry.canvas, 0, 0, entry.tcanvas.width, entry.tcanvas.height);
+        });
+        return entry.task;
+      }
 
-    chain.then(function () {
-      // Highlight the page currently in view.
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
+      // Highlight whichever page is in view.
+      var active = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
           if (!e.isIntersecting) return;
           var idx = parseInt(e.target.dataset.page, 10) - 1;
-          thumbEls.forEach(function (t, j) {
-            if (t) t.classList.toggle('is-active', j === idx);
-          });
+          entries.forEach(function (en, j) { en.thumb.classList.toggle('is-active', j === idx); });
         });
       }, { root: stack, threshold: 0.5 });
-      pageEls.forEach(function (el) { if (el) io.observe(el); });
-      if (thumbEls[0]) thumbEls[0].classList.add('is-active');
+
+      // Render pages just before they scroll into view.
+      var lazy = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) renderMain(entries[parseInt(e.target.dataset.page, 10) - 1]);
+        });
+      }, { root: stack, rootMargin: '600px 0px' });
+
+      entries.forEach(function (en) { active.observe(en.wrap); lazy.observe(en.wrap); });
+      entries[0].thumb.classList.add('is-active');
+
+      // Page 1 first — show it as soon as it paints.
+      renderMain(entries[0]).then(function () { if (status) status.remove(); });
+
+      // Quietly fill the remaining pages/thumbnails in the background at idle,
+      // so scrolling is instant and every thumbnail eventually renders.
+      var bg = 1;
+      (function fillNext() {
+        while (bg < entries.length && entries[bg].done) bg++;
+        if (bg >= entries.length) return;
+        renderMain(entries[bg]).then(function () { ric(fillNext); });
+      })();
     });
   }).catch(fail);
 })();
