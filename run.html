@@ -30,6 +30,17 @@ body { padding-bottom: 120px; }
 }
 .kyn-topbar-inner > :first-child { justify-self: start; }
 .kyn-topbar-inner > :last-child { justify-self: end; }
+.btn-cta-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--orange-500); color: #fff; border: 0;
+  border-radius: var(--r-pill); padding: 9px 16px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  box-shadow: var(--bevel), 0 8px 24px -8px var(--orange-glow);
+  cursor: pointer; transition: transform var(--dur-1), background var(--dur-2);
+  text-decoration: none;
+}
+.btn-cta-primary:hover { background: var(--orange-600); transform: translateY(-1px); }
+.btn-cta-primary .arrow { width: 14px; height: 14px; }
 .kyn-mark { display: inline-flex; align-items: center; gap: 10px; }
 .kyn-mark .glyph {
   width: 22px; height: 22px;
@@ -913,7 +924,7 @@ body { padding-bottom: 120px; }
         <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       </button>
       <button class="btn btn-ghost btn-sm">Replay</button>
-      <button class="btn btn-primary btn-sm">New run →</button>
+      <button class="btn-cta-primary">New run <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/><path d="m13 5 7 7-7 7"/></svg></button>
     </div>
   </div>
 </header>
