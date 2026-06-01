@@ -24,7 +24,9 @@
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--surface-line);
   }
-  .lp-top-inner { max-width: 1320px; margin: 0 auto; padding: 14px var(--s-8); display: flex; align-items: center; justify-content: space-between; gap: var(--s-6); }
+  .lp-top-inner { max-width: 1320px; margin: 0 auto; padding: 14px var(--s-8); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--s-6); }
+  .lp-top-inner > :first-child { justify-self: start; }
+  .lp-top-inner > :last-child { justify-self: end; }
   .lp-mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-1); }
   .lp-mark .glyph {
     width: 26px; height: 26px; background: var(--orange-500); border-radius: 7px;
@@ -105,7 +107,8 @@
   .lp-foot-nav a:hover { color: var(--orange-500); }
 
   @media (max-width: 720px) {
-    .lp-nav { display: none; }
+    .lp-top-inner { display: flex; justify-content: space-between; }
+    .lp-top-inner > nav { display: none; }
     .brand-doc { padding: 0 var(--s-4); }
     .brand-viewer { flex-direction: column; height: 80vh; }
     .thumb-rail {
@@ -122,8 +125,8 @@
 <header class="lp-top" data-screen-label="Brand">
   <div class="lp-top-inner">
     <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
-    <nav class="lp-nav">
-      <a href="/#capabilities">Capabilities</a>
+    <nav class="lp-foot-nav">
+      <a href="/">Home</a>
       <a href="/run">Demo</a>
       <a href="/design-system">Design system</a>
       <a href="/brand" aria-current="page">Brand</a>

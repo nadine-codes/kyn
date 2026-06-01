@@ -25,9 +25,11 @@ body { padding-bottom: 120px; }
 .kyn-topbar-inner {
   max-width: 1480px; margin: 0 auto;
   padding: 12px var(--s-8);
-  display: flex; align-items: center; justify-content: space-between;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
   gap: var(--s-6);
 }
+.kyn-topbar-inner > :first-child { justify-self: start; }
+.kyn-topbar-inner > :last-child { justify-self: end; }
 .kyn-mark { display: inline-flex; align-items: center; gap: 10px; }
 .kyn-mark .glyph {
   width: 22px; height: 22px;
@@ -788,7 +790,8 @@ body { padding-bottom: 120px; }
   body { padding-bottom: 60px; }
 
   /* topbar - collapse to mark + primary action */
-  .kyn-topbar-inner { padding: 10px var(--s-4); gap: 10px; flex-wrap: wrap; }
+  .kyn-topbar-inner { padding: 10px var(--s-4); gap: 10px; display: flex; flex-wrap: wrap; }
+  .kyn-topbar-inner > nav { display: none; }
   .crumbs { display: none; }
   .kyn-topbar-inner > .kyn-row { gap: 6px; }
   .kyn-topbar-inner > .kyn-row .btn { padding: 7px 12px; font-size: 12px; }
@@ -893,11 +896,12 @@ body { padding-bottom: 120px; }
       <span class="word">kyn</span>
     </a>
 
-    <div class="crumbs">
-      <a href="#">RUNS</a>
-      <span class="sep">/</span>
-      <span class="here">17B170FA</span>
-    </div>
+    <nav class="lp-foot-nav">
+      <a href="/">Home</a>
+      <a href="/run" aria-current="page">Demo</a>
+      <a href="/design-system">Design system</a>
+      <a href="/brand">Brand</a>
+    </nav>
 
     <div class="kyn-row" style="gap: var(--s-2);">
       <button class="id-chip" aria-label="copy run id" title="Copy run id">

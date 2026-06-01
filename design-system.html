@@ -25,8 +25,10 @@ body { padding-bottom: 120px; }
 .kyn-topbar-inner {
   max-width: 1280px; margin: 0 auto;
   padding: 14px var(--s-10);
-  display: flex; align-items: center; justify-content: space-between;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
 }
+.kyn-topbar-inner > :first-child { justify-self: start; }
+.kyn-topbar-inner > :last-child { justify-self: end; }
 .kyn-mark {
   display: inline-flex; align-items: center; gap: 10px;
   color: var(--ink-1); text-decoration: none; cursor: pointer;
@@ -339,7 +341,7 @@ body { padding-bottom: 120px; }
 
 @media (max-width: 640px) {
   /* topbar collapses */
-  .kyn-topbar-inner { padding: 12px var(--s-4); gap: var(--s-3); flex-wrap: wrap; }
+  .kyn-topbar-inner { padding: 12px var(--s-4); gap: var(--s-3); display: flex; flex-wrap: wrap; }
   .kyn-topbar-inner nav { display: none; }
   .kyn-topbar-inner .btn-ghost { display: none; }
 
@@ -440,9 +442,11 @@ body { padding-bottom: 120px; }
       <span class="glyph"></span>
       <span class="word">kyn<span class="reg">®</span></span>
     </a>
-    <nav class="kyn-row" style="gap: var(--s-6);">
-      <span class="t-eyebrow">v0.1 · DESIGN SYSTEM</span>
-      <span class="badge badge-dot badge-orange"><span style="font-size:10.5px">LIVE DOC</span></span>
+    <nav class="lp-foot-nav">
+      <a href="/">Home</a>
+      <a href="/run">Demo</a>
+      <a href="/design-system" aria-current="page">Design system</a>
+      <a href="/brand">Brand</a>
     </nav>
     <div class="kyn-row">
       <button class="btn btn-ghost btn-sm">Tokens</button>
