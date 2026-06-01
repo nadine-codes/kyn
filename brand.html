@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>kyn® — Brand identity system</title>
+<title>kyn™ — Brand identity system</title>
 <meta name="description" content="The kyn brand identity system — logo, type, color, and usage." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -126,6 +126,13 @@
     }
     .thumb { flex: 0 0 84px; width: 84px; }
   }
+
+  /* Footer: match the home page's mobile footer (stacked, left-aligned) */
+  @media (max-width: 760px) {
+    .lp-foot { padding: var(--s-8) 0; margin-top: var(--s-8); }
+    .lp-foot-inner { flex-direction: column; align-items: flex-start; gap: var(--s-4); padding: 0 var(--s-5); }
+    .lp-foot-nav { flex-wrap: wrap; gap: var(--s-3) var(--s-4); }
+  }
 </style>
 </head>
 <body>
@@ -133,7 +140,7 @@
 <!-- ===================== TOPBAR ===================== -->
 <header class="lp-top" data-screen-label="Brand">
   <div class="lp-top-inner">
-    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">™</span></span></a>
     <nav class="lp-foot-nav">
       <a href="/">Home</a>
       <a href="/run">Demo</a>
@@ -167,7 +174,7 @@
 <!-- ===================== FOOTER ===================== -->
 <footer class="lp-foot">
   <div class="lp-foot-inner">
-    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">®</span></span></a>
+    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">™</span></span></a>
     <nav class="lp-foot-nav">
       <a href="/">Home</a>
       <a href="/run">Demo</a>

@@ -884,6 +884,21 @@
 
 /* shared site footer (ported from landing) */
 .lp-shell { max-width: 1320px; margin: 0 auto; padding: 0 var(--s-8); }
+/* Footer logo: match the home page's footer mark */
+.lp-mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink-1); }
+.lp-mark .glyph {
+  width: 26px; height: 26px; background: var(--orange-500); border-radius: 7px;
+  position: relative; box-shadow: var(--bevel), 0 1px 0 rgba(0,0,0,0.4); display: inline-block;
+}
+.lp-mark .glyph::after {
+  content: ""; position: absolute; inset: 6px; border: 2px solid #fff; border-radius: 3px;
+  border-right-color: transparent; border-bottom-color: transparent; transform: rotate(45deg);
+}
+.lp-mark .word { font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+.lp-mark .reg {
+  font-family: var(--font-mono); font-size: 9px; color: var(--ink-3);
+  margin-left: 2px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: super;
+}
 .lp-foot { padding: var(--s-12) 0 var(--s-10); border-top: 1px solid var(--surface-line); margin-top: var(--s-12); }
 .lp-foot-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-8); flex-wrap: wrap; }
 .lp-foot-mono { font-family: var(--font-mono); font-size: 11px; letter-spacing: var(--tracking-mono); color: var(--ink-3); }
@@ -895,6 +910,7 @@
   .lp-foot { padding: var(--s-8) 0; margin-top: var(--s-8); }
   .lp-foot-inner { flex-direction: column; align-items: flex-start; gap: var(--s-4); }
   .lp-foot-nav { flex-wrap: wrap; gap: var(--s-3) var(--s-4); }
+  .lp-mark .word { font-size: 16px; }
 }
 </style>
 </head>
@@ -1416,7 +1432,7 @@
 <!-- ===================== FOOTER ===================== -->
 <footer class="lp-foot">
   <div class="lp-shell lp-foot-inner">
-    <a class="kyn-mark" href="/" style="text-decoration: none; color: inherit;"><span class="glyph"></span><span class="word">kyn<span class="reg">™</span></span></a>
+    <a class="lp-mark" href="/"><span class="glyph"></span><span class="word">kyn<span class="reg">™</span></span></a>
     <nav class="lp-foot-nav">
       <a href="/">Home</a>
       <a href="/run">Demo</a>
