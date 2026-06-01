@@ -244,7 +244,9 @@
         var tcanvas = document.createElement('canvas');
         tcanvas.width = Math.round(THUMB_W * dpr);
         tcanvas.height = Math.round(THUMB_W * ratio * dpr);
-        tcanvas.style.width = THUMB_W + 'px';
+        // Let CSS (.thumb canvas { width: 100% }) size the canvas to its slot.
+        // An inline px width here overrode that and overflowed the 84px mobile
+        // thumbs, causing the previews to overlap each other.
         var tnum = document.createElement('span');
         tnum.className = 'num';
         tnum.textContent = num;
